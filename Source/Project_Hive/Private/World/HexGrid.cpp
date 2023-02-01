@@ -37,11 +37,14 @@ void AHexGrid::Generate()
 
 void AHexGrid::GenerateCircle()
 {
+	if (!IsValid(Generator))
+		return;
+	
 	if (AutoGenerateRandomSeed)
 		RandomSeed();
-	
-	URandomTerrainGenerator gen;
-	gen.initialize(2 * GridSize + 1, NoiseCellSize, Seed);
+
+	auto gen = NewObject<URandomTerrainGenerator>(this, Generator);
+	gen->initialize(2 * GridSize + 1, NoiseCellSize, Seed);
 
 	for (int32 q = -GridSize; q <= GridSize; q++)
 	{
@@ -51,7 +54,7 @@ void AHexGrid::GenerateCircle()
 			if (Cube::distance(coord, Cube::Zero()) > GridSize)
 				continue;
 			
-			auto tile = GetTileFor(coord, gen.perlinNoise2D(q, r));
+			auto tile = GetTileFor(coord, gen->perlinNoise2D(q, r));
 			SpawnTile(coord, tile);
 		}
 	}

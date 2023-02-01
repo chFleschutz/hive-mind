@@ -14,8 +14,6 @@ class PROJECT_HIVE_API URandomTerrainGenerator : public UObject
 {
 	GENERATED_BODY()
 public:
-	URandomTerrainGenerator();
-
 	void initialize(int32 tileGridSize, int32 noiseCellSize, uint32 seed = 0);
 
 	/** Returns the perlin noise value for the position (value between -1 and 1) */

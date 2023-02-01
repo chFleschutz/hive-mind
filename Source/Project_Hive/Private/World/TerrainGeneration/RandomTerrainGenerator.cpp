@@ -5,10 +5,6 @@
 #include "Math/UnrealMathUtility.h"
 
 
-URandomTerrainGenerator::URandomTerrainGenerator() 
-{
-}
-
 void URandomTerrainGenerator::initialize(int32 tileGridSize, int32 noiseCellSize, uint32 seed)
 {
 	Seed = seed;
