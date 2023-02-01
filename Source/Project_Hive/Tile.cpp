@@ -81,3 +81,8 @@ void ATile::Tick(float DeltaTime)
 
 }
 
+void ATile::setGridPosition(const Cube& position)
+{
+	GridPosition = position;
+}
+

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "Cube.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Tile.generated.h"
@@ -20,6 +22,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Sets the position in the grid
+	void setGridPosition(const Cube& position);
+
+	// Renders a highlight outline 
 	void SetSelected(bool IsSelected);
 
 	virtual bool CanBuild();
@@ -35,10 +41,11 @@ protected:
 public:
 	// Components
 	//
-	/** Hex Static Mesh Component */
+	// Hexagon Static Mesh Component 
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Components|Mesh", meta = (AllowPrivateAccess = "true"))
 		class UStaticMeshComponent* HexTileMesh;
 
 protected:
 	ATileStructure* Structure = nullptr;
+	Cube GridPosition;
 };
