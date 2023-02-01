@@ -4,7 +4,7 @@
 
 #include "Tile.h"
 #include "Cube.h"
-#include "NoiseGrid.h"
+#include "RandomTerrainGenerator.h"
 
 // Sets default values
 AHexGrid::AHexGrid()
@@ -36,7 +36,11 @@ void AHexGrid::Generate()
 
 void AHexGrid::GenerateCircle()
 {
-	NoiseGrid noise(2 * GridSize + 1, NoiseCellSize, time(nullptr));
+	if (AutoGenerateRandomSeed)
+		RandomSeed();
+	
+	URandomTerrainGenerator gen;
+	gen.initialize(2 * GridSize + 1, NoiseCellSize, Seed);
 
 	for (int32 q = -GridSize; q <= GridSize; q++)
 	{
@@ -46,7 +50,7 @@ void AHexGrid::GenerateCircle()
 			if (Cube::distance(coord, Cube::Zero()) > GridSize)
 				continue;
 			
-			auto tile = GetTileFor(coord, noise.perlinNoise2D(q, r));
+			auto tile = GetTileFor(coord, gen.perlinNoise2D(q, r));
 			SpawnTile(coord, tile);
 		}
 	}
@@ -59,6 +63,11 @@ void AHexGrid::DestroyTiles()
 		tile->Destroy();
 	}
 	GeneratedTiles.Empty();
+}
+
+void AHexGrid::RandomSeed()
+{
+	Seed = FMath::Rand();
 }
 
 FVector AHexGrid::WorldLocation(const Cube& gridPosition)
@@ -84,19 +93,28 @@ void AHexGrid::SpawnTile(const Cube& gridPosition, TSubclassOf<ATile> tileToSpaw
 	if (!IsValid(tile))
 		return;
 
-	FAttachmentTransformRules rules(EAttachmentRule::KeepRelative, false);
-	tile->AttachToActor(this, rules);
+	tile->setGridPosition(gridPosition);
+	tile->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
 	GeneratedTiles.Add(tile);
 }
 
 TSubclassOf<ATile> AHexGrid::GetTileFor(const Cube& gridPos, float value)
 {
 	auto message = "Pos: " + FString::FromInt(gridPos.Q) + " - " + FString::FromInt(gridPos.R) + "   Value: " + FString::SanitizeFloat(value);
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, message);
-	if (value < 0.2f)
+	value = value + 1.0f;
+
+	if (value < SandValue)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, message);
 		return SandTile;
-	if (value < 0.4f)
+	}
+	value = value - SandValue;
+	if (value < WaterValue)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, message);
 		return WaterTile;
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, message);
 
 	return GrassTile;
 }

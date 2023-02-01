@@ -3,20 +3,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/NoExportTypes.h"
+#include "RandomTerrainGenerator.generated.h"
 
 /**
  * 
  */
-class PROJECT_HIVE_API NoiseGrid
+UCLASS()
+class PROJECT_HIVE_API URandomTerrainGenerator : public UObject
 {
+	GENERATED_BODY()
 public:
-	NoiseGrid(uint32 tileGridSize, uint32 noiseCellSize, uint32 seed = 0);
-	~NoiseGrid();
+	URandomTerrainGenerator();
 
-	/** Returns the perlin noise value for the position (value between 0 and 1) */
+	void initialize(int32 tileGridSize, int32 noiseCellSize, uint32 seed = 0);
+
+	/** Returns the perlin noise value for the position (value between -1 and 1) */
 	float perlinNoise2D(int32 posX, int32 posY);
 
-private:
+protected:
 	// Returns a random unit FVector2D 
 	FVector2D randomVec();
 

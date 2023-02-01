@@ -1,17 +1,21 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "NoiseGrid.h"
+#include "RandomTerrainGenerator.h"
 
 #include "Math/UnrealMathUtility.h"
 
 
-NoiseGrid::NoiseGrid(uint32 tileGridSize, uint32 noiseCellSize, uint32 seed) :
-	CellSize(noiseCellSize),
-	Seed(seed)
+URandomTerrainGenerator::URandomTerrainGenerator() 
 {
-	FMath::RandInit(seed);
-	
+}
+
+void URandomTerrainGenerator::initialize(int32 tileGridSize, int32 noiseCellSize, uint32 seed)
+{
+	Seed = seed;
+	CellSize = noiseCellSize;
 	GridSize = FMath::DivideAndRoundUp(tileGridSize, noiseCellSize);
+	FMath::RandInit(Seed);
+
 	for (int32 x = -GridSize; x <= GridSize; x++)
 	{
 		for (int32 y = -GridSize; y <= GridSize; y++)
@@ -21,11 +25,7 @@ NoiseGrid::NoiseGrid(uint32 tileGridSize, uint32 noiseCellSize, uint32 seed) :
 	}
 }
 
-NoiseGrid::~NoiseGrid()
-{
-}
-
-float NoiseGrid::perlinNoise2D(int32 posX, int32 posY)
+float URandomTerrainGenerator::perlinNoise2D(int32 posX, int32 posY)
 {
 	// Coordinate conversion
 	const float positionX = (float)posX / (float)CellSize;
@@ -50,30 +50,27 @@ float NoiseGrid::perlinNoise2D(int32 posX, int32 posY)
 	return FMath::Lerp(lerpX1, lerpX2, positionX - FMath::Floor(positionX));
 }
 
-FVector2D NoiseGrid::randomVec()
+FVector2D URandomTerrainGenerator::randomVec()
 {
 	auto randAngle = FMath::FRand() * 2.0f * UE_PI;
 	return FVector2D(FMath::Cos(randAngle), FMath::Sin(randAngle));
 }
 
-float NoiseGrid::CornerGradientDotProduct(int32 cornerPosX, int32 cornerPosY, float posX, float posY)
+float URandomTerrainGenerator::CornerGradientDotProduct(int32 cornerPosX, int32 cornerPosY, float posX, float posY)
 {
-	// Get random vector for corner
 	auto cornerVec = noiseVec(cornerPosX, cornerPosY);
-	// Calculate vector from corner to position
 	auto gradientVec = FVector2D(posX, posY) - FVector2D(cornerPosX, cornerPosX);
 	gradientVec.Normalize();
-	// Return dot product of both vectors
 	return cornerVec.Dot(gradientVec);
 }
 
-FVector2D NoiseGrid::noiseVec(uint32 x, uint32 y)
+FVector2D URandomTerrainGenerator::noiseVec(uint32 x, uint32 y)
 {
 	auto shiftedX = x + GridSize;
 	auto shiftedY = y + GridSize;
 	auto index = shiftedX * GridSize + shiftedY;
-	if (Noise.IsValidIndex(index))
-		return Noise[index];
+	if (!Noise.IsValidIndex(index))
+		return FVector2D(1, 0);
 
-	return FVector2D(1, 0);
+	return Noise[index];
 }
