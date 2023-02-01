@@ -1,8 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GrassTile.h"
+#include "World/Tiles/GrassTile.h"
 
-#include "TileStructure.h"
+#include "World/Structures/TileStructure.h"
+
 
 bool AGrassTile::CanBuild()
 {

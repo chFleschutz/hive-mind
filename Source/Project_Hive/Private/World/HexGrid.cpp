@@ -1,10 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "HexGrid.h"
+#include "World/HexGrid.h"
 
-#include "Tile.h"
 #include "Cube.h"
-#include "RandomTerrainGenerator.h"
+#include "World/TerrainGeneration/RandomTerrainGenerator.h"
+#include "World/Tiles/Tile.h"
+
 
 // Sets default values
 AHexGrid::AHexGrid()

@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "BirdsEyePlayer.h"
+#include "Player/BirdsEyePlayer.h"
 
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
@@ -10,8 +10,10 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
-#include "Tile.h"
-#include "TileStructure.h"
+
+#include "World/Tiles/Tile.h"
+#include "World/Structures/TileStructure.h"
+
 
 // Sets default values
 ABirdsEyePlayer::ABirdsEyePlayer()

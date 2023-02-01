@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SandTile.h"
+#include "World/Tiles/SandTile.h"
+
 
 bool ASandTile::CanBuild()
 {

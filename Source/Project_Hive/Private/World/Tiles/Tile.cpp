@@ -1,8 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Tile.h"
+#include "World/Tiles/Tile.h"
 
-#include "TileStructure.h"
+#include "World/Structures/TileStructure.h"
+
 
 // Sets default values
 ATile::ATile()
