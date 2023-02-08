@@ -3,19 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Tile.h"
-#include "GrassTile.generated.h"
+#include "UObject/NoExportTypes.h"
+#include "VoronoiGenerator.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_HIVE_API AGrassTile : public ATile
+class PROJECT_HIVE_API UVoronoiGenerator : public UObject
 {
 	GENERATED_BODY()
 	
-public:
-	AGrassTile() = default;
-
-	virtual bool CanBuild();
 };

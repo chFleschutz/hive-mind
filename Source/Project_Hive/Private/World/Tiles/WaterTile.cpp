@@ -8,8 +8,3 @@ bool AWaterTile::CanBuild()
 {
     return false;
 }
-
-void AWaterTile::Build(TSubclassOf<ATileStructure> structure)
-{
-    // Not able to build
-}

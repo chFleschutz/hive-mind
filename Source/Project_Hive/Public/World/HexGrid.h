@@ -8,7 +8,6 @@
 #include "HexGrid.generated.h"
 
 class Cube;
-class URandomTerrainGenerator;
 
 UCLASS()
 class PROJECT_HIVE_API AHexGrid : public AActor
@@ -64,9 +63,6 @@ protected:
 	
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Layout|Random")
 		int32 Seed = 0x00000000;
-
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Layout|Random")
-		TSubclassOf<URandomTerrainGenerator> Generator;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Layout|Random")
 		int32 NoiseCellSize = 10;

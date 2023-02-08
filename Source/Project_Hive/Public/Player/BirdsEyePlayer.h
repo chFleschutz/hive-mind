@@ -41,6 +41,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		bool HasTileSelected();
 
+	UFUNCTION(BlueprintCallable)
+		void startBuildingStructure(TSubclassOf<ATileStructure> structure);
 
 protected:
 	// Called when the game starts or when spawned
@@ -123,6 +125,10 @@ public:
 		class UInputAction* SelectAction;
 
 private:
+	ATile* QueryTileUnderCursor();
+
 	// Members
 	ATile* SelectedTile = nullptr;
+
+	ATileStructure* PreviewStructure;
 };

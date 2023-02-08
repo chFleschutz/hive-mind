@@ -13,22 +13,6 @@ UCLASS()
 class PROJECT_HIVE_API URandomTerrainGenerator : public UObject
 {
 	GENERATED_BODY()
-public:
-	void initialize(int32 tileGridSize, int32 noiseCellSize, uint32 seed = 0);
 
-	/** Returns the perlin noise value for the position (value between -1 and 1) */
-	float perlinNoise2D(int32 posX, int32 posY);
-
-protected:
-	// Returns a random unit FVector2D 
-	FVector2D randomVec();
-
-	float CornerGradientDotProduct(int32 cornerPosX, int32 cornerPosY, float posX, float posY);
-
-	FVector2D noiseVec(uint32 x, uint32 y);
-
-	TArray<FVector2D> Noise;
-	int32 GridSize;
-	int32 CellSize;
-	uint32 Seed;
+		// Maybe future base class for random generators
 };

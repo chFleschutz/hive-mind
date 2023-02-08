@@ -3,19 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Tile.h"
-#include "GrassTile.generated.h"
+#include "GameFramework/GameModeBase.h"
+#include "BuildingGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_HIVE_API AGrassTile : public ATile
+class PROJECT_HIVE_API ABuildingGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
 public:
-	AGrassTile() = default;
+	ABuildingGameMode();
 
-	virtual bool CanBuild();
 };

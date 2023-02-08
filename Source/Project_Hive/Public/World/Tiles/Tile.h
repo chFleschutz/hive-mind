@@ -29,7 +29,7 @@ public:
 	void SetSelected(bool IsSelected);
 
 	virtual bool CanBuild();
-	virtual void Build(TSubclassOf<ATileStructure> structure);
+	void Build(ATileStructure* structure);
 	
 	bool CanDestroyBuilding();
 	void DestroyBuilding();

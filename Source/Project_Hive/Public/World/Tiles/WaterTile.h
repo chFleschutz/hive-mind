@@ -16,6 +16,4 @@ class PROJECT_HIVE_API AWaterTile : public ATile
 	
 public:
 	virtual bool CanBuild();
-	virtual void Build(TSubclassOf<ATileStructure> structure);
-
 };

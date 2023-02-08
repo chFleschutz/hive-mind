@@ -29,4 +29,3 @@ void ATileStructure::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-

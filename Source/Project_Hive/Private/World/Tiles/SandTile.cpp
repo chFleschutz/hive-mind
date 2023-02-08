@@ -8,7 +8,3 @@ bool ASandTile::CanBuild()
 {
     return false;
 }
-
-void ASandTile::Build(TSubclassOf<ATileStructure> structure)
-{
-}

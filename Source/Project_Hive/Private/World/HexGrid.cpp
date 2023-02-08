@@ -3,7 +3,7 @@
 #include "World/HexGrid.h"
 
 #include "Cube.h"
-#include "World/TerrainGeneration/RandomTerrainGenerator.h"
+#include "World/TerrainGeneration/PerlinNoiseGenerator.h"
 #include "World/Tiles/Tile.h"
 
 
@@ -37,13 +37,10 @@ void AHexGrid::Generate()
 
 void AHexGrid::GenerateCircle()
 {
-	if (!IsValid(Generator))
-		return;
-	
 	if (AutoGenerateRandomSeed)
 		RandomSeed();
 
-	auto gen = NewObject<URandomTerrainGenerator>(this, Generator);
+	auto gen = NewObject<UPerlinNoiseGenerator>();
 	gen->initialize(2 * GridSize + 1, NoiseCellSize, Seed);
 
 	for (int32 q = -GridSize; q <= GridSize; q++)
@@ -104,21 +101,13 @@ void AHexGrid::SpawnTile(const Cube& gridPosition, TSubclassOf<ATile> tileToSpaw
 
 TSubclassOf<ATile> AHexGrid::GetTileFor(const Cube& gridPos, float value)
 {
-	auto message = "Pos: " + FString::FromInt(gridPos.Q) + " - " + FString::FromInt(gridPos.R) + "   Value: " + FString::SanitizeFloat(value);
 	value = value + 1.0f;
-
 	if (value < SandValue)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, message);
 		return SandTile;
-	}
+
 	value = value - SandValue;
 	if (value < WaterValue)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, message);
 		return WaterTile;
-	}
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, message);
 
 	return GrassTile;
 }

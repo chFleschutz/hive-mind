@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
+#include "Engine/CollisionProfile.h"
 
 #include "World/Tiles/Tile.h"
 #include "World/Structures/TileStructure.h"
@@ -76,6 +77,15 @@ void ABirdsEyePlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+	if (PreviewStructure)
+	{
+		auto HoveredTile = QueryTileUnderCursor();
+		if (!HoveredTile)
+			return;
+
+		auto location = HoveredTile->GetActorLocation() + FVector(0.0, 0.0, 100.0);
+		PreviewStructure->SetActorLocation(location);
+	}
 }
 
 // Called to bind functionality to input
@@ -93,8 +103,8 @@ void ABirdsEyePlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 
 void ABirdsEyePlayer::BuildOnSelectedTile()
 {
-	if (SelectedTile)
-		SelectedTile->Build(DefaultStructure);
+	//if (SelectedTile)
+	//	SelectedTile->Build(DefaultStructure);
 }
 
 void ABirdsEyePlayer::DestroyBuildingOnSelectedTile()
@@ -122,6 +132,24 @@ bool ABirdsEyePlayer::CanDestroyBuilding()
 bool ABirdsEyePlayer::HasTileSelected()
 {
 	return static_cast<bool>(SelectedTile);
+}
+
+void ABirdsEyePlayer::startBuildingStructure(TSubclassOf<ATileStructure> structure)
+{
+	// show preview
+	if (auto tile = QueryTileUnderCursor())
+	{
+		if (!IsValid(structure))
+			return;
+
+		auto world = GetWorld();
+		if (!IsValid(world))
+			return;
+
+		auto Location = tile->GetActorLocation() + FVector(0.0, 0.0, 100.0);
+		auto Rotation = FRotator(0.0, 60.0 * FMath::RandRange(0, 5), 0.0);
+		PreviewStructure = world->SpawnActor<ATileStructure>(structure, Location, Rotation);
+	}
 }
 
 void ABirdsEyePlayer::Zoom(const FInputActionValue& Value)
@@ -158,6 +186,17 @@ void ABirdsEyePlayer::Move(const FInputActionValue& Value)
 
 void ABirdsEyePlayer::Select(const FInputActionValue& Value)
 {
+	// Finally build preview tile
+	if (PreviewStructure)
+	{
+		if (auto tile = QueryTileUnderCursor())
+		{
+			tile->Build(PreviewStructure);
+			PreviewStructure = nullptr;
+			return;
+		}
+	}
+
 	// Deselect last selection
 	if (SelectedTile)
 	{
@@ -165,30 +204,30 @@ void ABirdsEyePlayer::Select(const FInputActionValue& Value)
 		SelectedTile = nullptr;
 	}
 
-	auto playerController = GetWorld()->GetFirstPlayerController();
-	if (playerController == nullptr)
-		return;
-
-	// Line Trace
-	FHitResult Hit;
-	FVector mouseLocation;
-	FVector mouseDirection;
-	playerController->DeprojectMousePositionToWorld(mouseLocation, mouseDirection);
-
-	GetWorld()->LineTraceSingleByChannel(Hit, mouseLocation, mouseLocation + (mouseDirection * 10000.0f), ECC_Visibility);
-
-	if (!Hit.bBlockingHit)
-		return;
-	
-	auto actor = Hit.GetActor();
-	if (!IsValid(actor))
-		return;
-
-	// Cast to Tile
-	auto tile = dynamic_cast<ATile*>(actor);
-	if (tile)
-	{	// Selecte Tile
+	if (auto tile = QueryTileUnderCursor())
+	{
 		tile->SetSelected(true);
 		SelectedTile = tile;
 	}
+}
+
+ATile* ABirdsEyePlayer::QueryTileUnderCursor()
+{
+	auto playerController = GetWorld()->GetFirstPlayerController();
+	if (!playerController)
+		return nullptr;
+
+	FHitResult Hit;
+	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypesArray;
+	objectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1));
+	playerController->GetHitResultUnderCursorForObjects(objectTypesArray, false, Hit);
+
+	if (!Hit.IsValidBlockingHit())
+		return nullptr;
+
+	auto HitActor = Hit.GetActor();
+	if (!IsValid(HitActor))
+		return nullptr;
+
+	return Cast<ATile>(HitActor);
 }
