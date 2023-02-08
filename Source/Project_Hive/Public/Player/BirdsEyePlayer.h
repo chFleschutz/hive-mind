@@ -55,45 +55,44 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Select(const FInputActionValue& Value);
 
-public:
 	// Components
 	//
 	/** An invisible Mesh Component */
-	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Components|Mesh", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components|Mesh")
 		class UStaticMeshComponent* InvisibleMesh;
 	
 	/** Camera Component */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components|Camera", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components|Camera")
 		class UCameraComponent* Camera;
 
 	/** Spring Arm Component */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components|Camera", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components|Camera")
 		class USpringArmComponent* SpringArm;
 
 	/** DefaultPawn movement component */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pawn, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Pawn")
 		class UFloatingPawnMovement* MovementComponent;
 
 	// Camera Settings
 	//
 	/** Min Length of Spring Arm */
-	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Player Settings", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Player Settings")
 		float MinCameraZoom = 500.0f;
 
 	/** Max Length of Spring Arm */
-	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Player Settings", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Player Settings")
 		float MaxCameraZoom = 2000.0f;
 
 	/** Zoom Speed */
-	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Player Settings", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Player Settings")
 		float ZoomSpeed = 100.0f;
 
 	/** Min Pitch Angle */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Settings", meta = (AllowPrivateAccess = "true"))
-		float MinPitchAngle = 300.0f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Settings")
+		float MinPitchAngle = 290.0f;
 
 	/** Max Pitch Angle */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Settings", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Settings")
 		float MaxPitchAngle = 360.0f;
 
 	// Gameplay
@@ -105,23 +104,23 @@ public:
 	// Input
 	//
 	/** Mapping Context */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 		class UInputMappingContext* InputMapping;
 
 	/** Zoom Input Action*/
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input|Actions", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
 		class UInputAction* ZoomAction;
 
 	/** Look Input Action*/
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input|Actions", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
 		class UInputAction* LookAction;
 
 	/** Move Input Action*/
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input|Actions", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
 		class UInputAction* MoveAction;
 
 	/** Select Input Action*/
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input|Actions", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
 		class UInputAction* SelectAction;
 
 private:

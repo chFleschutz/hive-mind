@@ -137,19 +137,16 @@ bool ABirdsEyePlayer::HasTileSelected()
 void ABirdsEyePlayer::startBuildingStructure(TSubclassOf<ATileStructure> structure)
 {
 	// show preview
-	if (auto tile = QueryTileUnderCursor())
-	{
-		if (!IsValid(structure))
-			return;
+	if (!IsValid(structure))
+		return;
 
-		auto world = GetWorld();
-		if (!IsValid(world))
-			return;
+	auto world = GetWorld();
+	if (!IsValid(world))
+		return;
 
-		auto Location = tile->GetActorLocation() + FVector(0.0, 0.0, 100.0);
-		auto Rotation = FRotator(0.0, 60.0 * FMath::RandRange(0, 5), 0.0);
-		PreviewStructure = world->SpawnActor<ATileStructure>(structure, Location, Rotation);
-	}
+	auto Location = FVector::Zero();
+	auto Rotation = FRotator(0.0, 60.0 * FMath::RandRange(0, 5), 0.0);
+	PreviewStructure = world->SpawnActor<ATileStructure>(structure, Location, Rotation);
 }
 
 void ABirdsEyePlayer::Zoom(const FInputActionValue& Value)
@@ -189,12 +186,16 @@ void ABirdsEyePlayer::Select(const FInputActionValue& Value)
 	// Finally build preview tile
 	if (PreviewStructure)
 	{
-		if (auto tile = QueryTileUnderCursor())
-		{
-			tile->Build(PreviewStructure);
-			PreviewStructure = nullptr;
+		auto tile = QueryTileUnderCursor();
+		if (!tile)
 			return;
-		}
+
+		if (!tile->CanBuild(PreviewStructure))
+			return;
+
+		tile->Build(PreviewStructure);
+		PreviewStructure = nullptr;
+		return;
 	}
 
 	// Deselect last selection

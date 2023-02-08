@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Cube.h"
+#include "World/Structures/TileStructure.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -29,7 +30,9 @@ public:
 	void SetSelected(bool IsSelected);
 
 	virtual bool CanBuild();
-	void Build(ATileStructure* structure);
+
+	virtual bool CanBuild(ATileStructure* NewStructure);
+	virtual void Build(ATileStructure* NewStructure);
 	
 	bool CanDestroyBuilding();
 	void DestroyBuilding();
@@ -38,14 +41,15 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:
 	// Components
 	//
 	// Hexagon Static Mesh Component 
-	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Components|Mesh", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components|Mesh")
 		class UStaticMeshComponent* HexTileMesh;
 
-protected:
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Tile Settings")
+		EFoundationType TileFoundationType;
+
 	ATileStructure* Structure = nullptr;
 	Cube GridPosition;
 };

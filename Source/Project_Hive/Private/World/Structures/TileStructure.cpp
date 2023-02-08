@@ -12,8 +12,8 @@ ATileStructure::ATileStructure()
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Scene Root Component"));
 
-	tileStructureMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tile Structure Mesh"));
-	tileStructureMesh->SetupAttachment(RootComponent);
+	TileStructureMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tile Structure Mesh"));
+	TileStructureMesh->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -28,4 +28,9 @@ void ATileStructure::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+bool ATileStructure::CheckFoundationSupport(EFoundationType Foundation)
+{
+	return SupportedFoundationTypes.Contains(Foundation);
 }

@@ -2,7 +2,6 @@
 
 #include "World/Tiles/Tile.h"
 
-#include "World/Structures/TileStructure.h"
 
 
 // Sets default values
@@ -35,13 +34,25 @@ bool ATile::CanDestroyBuilding()
 	return static_cast<bool>(Structure);
 }
 
-void ATile::Build(ATileStructure* structure)
+bool ATile::CanBuild(ATileStructure* NewStructure)
 {
-	if (!IsValid(structure))
+	if (!IsValid(NewStructure))
+		return false;
+	if (Structure) // If tile already has a structure
+		return false;
+
+	return NewStructure->CheckFoundationSupport(TileFoundationType);
+}
+
+void ATile::Build(ATileStructure* NewStructure)
+{
+	if (!CanBuild(NewStructure))
 		return;
-	FAttachmentTransformRules rules(EAttachmentRule::SnapToTarget, false);
-	structure->AttachToActor(this, rules);
-	structure->SetActorLocation(structure->GetActorLocation() + FVector(0.0, 0.0, 100.0));
+
+	Structure = NewStructure;
+	Structure->SetActorLocation(this->GetActorLocation() + FVector(0.0, 0.0, 100.0)); //< Make sure it is in the right spot
+	FAttachmentTransformRules rules(EAttachmentRule::KeepWorld, false);
+	Structure->AttachToActor(this, rules);
 }
 
 void ATile::DestroyBuilding()
