@@ -38,7 +38,7 @@ void AHexGrid::Generate()
 void AHexGrid::GenerateCircle()
 {
 	if (AutoGenerateRandomSeed)
-		RandomSeed();
+		RandomizeSeed();
 
 	auto gen = NewObject<UPerlinNoiseGenerator>();
 	gen->initialize(2 * GridSize + 1, NoiseCellSize, Seed);
@@ -51,30 +51,32 @@ void AHexGrid::GenerateCircle()
 			if (Cube::distance(coord, Cube::Zero()) > GridSize)
 				continue;
 			
-			auto tile = GetTileFor(coord, gen->perlinNoise2D(q, r));
-			SpawnTile(coord, tile);
+			auto tileType = GetTileFor(coord, gen->perlinNoise2D(q, r));
+			SpawnTile(coord, tileType);
 		}
 	}
+
+	CalculateNeighbors();
 }
 
 void AHexGrid::DestroyTiles()
 {
-	for (const auto& tile : GeneratedTiles)
+	for (auto& entry : Grid)
 	{
-		tile->Destroy();
+		entry.Value->Destroy();
 	}
-	GeneratedTiles.Empty();
+	Grid.Empty();
 }
 
-void AHexGrid::RandomSeed()
+void AHexGrid::RandomizeSeed()
 {
 	Seed = FMath::Rand();
 }
 
 FVector AHexGrid::WorldLocation(const Cube& gridPosition)
 {
-	auto x = sqrt(3) * GridCellSize * (gridPosition.Q + 0.5 * gridPosition.R);
-	auto y = 3.0 / 2.0 * GridCellSize * gridPosition.R;
+	auto x = sqrt(3) * GridCellSize * (gridPosition.Q() + 0.5 * gridPosition.R());
+	auto y = 3.0 / 2.0 * GridCellSize * gridPosition.R();
 	return GridOrigin + FVector(x, y, 0.0);
 }
 
@@ -96,7 +98,7 @@ void AHexGrid::SpawnTile(const Cube& gridPosition, TSubclassOf<ATile> tileToSpaw
 
 	tile->setGridPosition(gridPosition);
 	tile->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
-	GeneratedTiles.Add(tile);
+	Grid.Add(gridPosition, tile);
 }
 
 TSubclassOf<ATile> AHexGrid::GetTileFor(const Cube& gridPos, float value)
@@ -110,4 +112,19 @@ TSubclassOf<ATile> AHexGrid::GetTileFor(const Cube& gridPos, float value)
 		return WaterTile;
 
 	return GrassTile;
+}
+
+void AHexGrid::CalculateNeighbors()
+{
+	for (auto& Element : Grid)
+	{
+		auto tile = Element.Value;
+		auto position = Element.Key;
+		for (const auto& direction : Cube::directionVectors())
+		{
+			auto neighborPosition = position + direction;
+			if (auto neighbor = Grid.Find(neighborPosition))
+				tile->addNeighbor(*neighbor);
+		}
+	}
 }

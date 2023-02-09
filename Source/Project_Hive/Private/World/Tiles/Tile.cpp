@@ -84,3 +84,8 @@ void ATile::setGridPosition(const Cube& position)
 	GridPosition = position;
 }
 
+void ATile::addNeighbor(ATile* neighbor)
+{
+	Neighbors.Emplace(neighbor);
+}
+

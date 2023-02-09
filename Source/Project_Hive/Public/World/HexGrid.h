@@ -27,27 +27,12 @@ public:
 		void DestroyTiles();
 
 	UFUNCTION(CallInEditor, Category = "Layout")
-		void RandomSeed();
+		void RandomizeSeed();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-private:
-	void GenerateCircle();
-
-	// Returns the world-location for the grid coordinate
-	FVector WorldLocation(const Cube& gridPosition);
-	// Spawn a Tile at gridPosition 
-	void SpawnTile(const Cube& gridPosition, TSubclassOf<ATile> tileToSpawn);
-
-	// Returns a tile based on value
-	TSubclassOf<ATile> GetTileFor(const Cube& gridPos, float value);
-
-	FVector GridOrigin;
-	TArray<ATile*> GeneratedTiles;
-
-protected:
 	// Grid Layout Settings
 	//
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Layout")
@@ -86,4 +71,17 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Layout|Tiles")
 		TSubclassOf<ATile> WaterTile;
+
+private:
+	void GenerateCircle();
+	// Returns the world-location for the grid coordinate
+	FVector WorldLocation(const Cube& gridPosition);
+	// Spawn a Tile at gridPosition 
+	void SpawnTile(const Cube& gridPosition, TSubclassOf<ATile> tileToSpawn);
+	// Returns a tile based on value
+	TSubclassOf<ATile> GetTileFor(const Cube& gridPos, float value);
+	void CalculateNeighbors();
+
+	FVector GridOrigin;
+	TMap<Cube, ATile*> Grid;
 };

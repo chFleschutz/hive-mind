@@ -25,6 +25,8 @@ public:
 
 	// Sets the position in the grid
 	void setGridPosition(const Cube& position);
+	
+	void addNeighbor(ATile* neighbor);
 
 	// Renders a highlight outline 
 	void SetSelected(bool IsSelected);
@@ -51,5 +53,7 @@ protected:
 		EFoundationType TileFoundationType;
 
 	ATileStructure* Structure = nullptr;
+	
 	Cube GridPosition;
+	TArray<ATile*> Neighbors;
 };
