@@ -16,7 +16,7 @@ ATile::ATile()
 	HexTileMesh->SetupAttachment(RootComponent);
 }
 
-void ATile::SetSelected(bool IsSelected)
+void ATile::SetSelected(const bool IsSelected) const
 {
 	if (HexTileMesh)
 	{
@@ -29,7 +29,7 @@ bool ATile::CanBuild()
 	return static_cast<bool>(!Structure);
 }
 
-bool ATile::CanDestroyBuilding()
+bool ATile::CanDestroyBuilding() const
 {
 	return static_cast<bool>(Structure);
 }
@@ -51,8 +51,8 @@ void ATile::Build(ATileStructure* NewStructure)
 
 	Structure = NewStructure;
 	Structure->SetActorLocation(this->GetActorLocation() + FVector(0.0, 0.0, 100.0)); //< Make sure it is in the right spot
-	FAttachmentTransformRules rules(EAttachmentRule::KeepWorld, false);
-	Structure->AttachToActor(this, rules);
+	const FAttachmentTransformRules Rules(EAttachmentRule::KeepWorld, false);
+	Structure->AttachToActor(this, Rules);
 }
 
 void ATile::DestroyBuilding()
@@ -62,6 +62,20 @@ void ATile::DestroyBuilding()
 		Structure->Destroy();
 		Structure = nullptr;
 	}
+}
+
+bool ATile::CanTakeCharacter()
+{
+	return !Character;
+}
+
+bool ATile::TakeCharacter(ANavigationCharacter* NewCharacter)
+{
+	if (!CanTakeCharacter())
+		return false;
+
+	Character = NewCharacter;
+	return true;
 }
 
 // Called when the game starts or when spawned

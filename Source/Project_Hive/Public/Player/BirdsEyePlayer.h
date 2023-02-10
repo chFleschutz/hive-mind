@@ -6,9 +6,10 @@
 #include "GameFramework/Pawn.h"
 #include "BirdsEyePlayer.generated.h"
 
-class UInputComponent;
 class ATile;
 class ATileStructure;
+class UInputAction;
+class UInputComponent;
 struct FInputActionValue;
 
 UCLASS()
@@ -42,11 +43,19 @@ public:
 		bool HasTileSelected();
 
 	UFUNCTION(BlueprintCallable)
-		void startBuildingStructure(TSubclassOf<ATileStructure> structure);
+		void StartBuildingStructure(TSubclassOf<ATileStructure> Structure);
+
+	UFUNCTION(BlueprintCallable)
+		bool CanSpawnCharacter() const;
+
+	UFUNCTION(BlueprintCallable)
+		void SpawnCharacter(TSubclassOf<class ANavigationCharacter> Character) const;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	ATile* QueryTileUnderCursor() const;
 
 	// Input action callbacks:
 	//
@@ -54,8 +63,7 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void Move(const FInputActionValue& Value);
 	void Select(const FInputActionValue& Value);
-
-	ATile* QueryTileUnderCursor();
+	void MoveToTarget(const FInputActionValue& Value);
 
 	// Components
 	//
@@ -111,19 +119,23 @@ protected:
 
 	/** Zoom Input Action*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
-		class UInputAction* ZoomAction;
+		UInputAction* ZoomAction;
 
 	/** Look Input Action*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
-		class UInputAction* LookAction;
+		UInputAction* LookAction;
 
 	/** Move Input Action*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
-		class UInputAction* MoveAction;
+		UInputAction* MoveAction;
 
 	/** Select Input Action*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
-		class UInputAction* SelectAction;
+		UInputAction* SelectAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
+		UInputAction* MoveTargetAction;
+
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Grid")
 	ATile* SelectedTile = nullptr;

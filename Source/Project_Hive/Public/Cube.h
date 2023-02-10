@@ -13,6 +13,7 @@ public:
 	FCube();
 	FCube(int32 Q, int32 R);
 	FCube(const FCube& Other);
+	FCube(const FCube&& Other);
 
 	inline int32 Q() const { return M_Q; }
 	inline int32 R() const { return M_R; }
@@ -33,7 +34,7 @@ public:
 
 	static FCube Zero();
 
-	static int32 Distance(const FCube& A, const FCube& B);
+	static float Distance(const FCube& A, const FCube& B);
 
 	static TArray<FCube> DirectionVectors();
 

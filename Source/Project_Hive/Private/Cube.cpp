@@ -22,6 +22,13 @@ FCube::FCube(const FCube& Other)
 	M_S = Other.S();
 }
 
+FCube::FCube(const FCube&& Other)
+{
+	M_Q = Other.Q();
+	M_R = Other.R();
+	M_S = Other.S();
+}
+
 void FCube::SetQ(const int32 NewQ)
 {
 	M_Q = NewQ;
@@ -78,7 +85,7 @@ FCube FCube::Zero()
 	return FCube(0, 0);
 }
 
-int32 FCube::Distance(const FCube& A, const FCube& B)
+float FCube::Distance(const FCube& A, const FCube& B)
 {
 	const auto Cube = A - B;
 	return (abs(Cube.Q()) + abs(Cube.R()) + abs(Cube.S())) / 2;

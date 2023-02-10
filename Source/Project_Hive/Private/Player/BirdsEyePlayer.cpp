@@ -9,8 +9,7 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "InputMappingContext.h"
-#include "Engine/CollisionProfile.h"
+#include "AI/NavigationCharacter.h"
 
 #include "World/Tiles/Tile.h"
 #include "World/Structures/TileStructure.h"
@@ -50,7 +49,7 @@ void ABirdsEyePlayer::BeginPlay()
 	Super::BeginPlay();
 
 	// Set Input Mapping
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	if (const auto PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
@@ -59,16 +58,10 @@ void ABirdsEyePlayer::BeginPlay()
 
 		PlayerController->PlayerCameraManager->ViewPitchMin = MinPitchAngle;
 		PlayerController->PlayerCameraManager->ViewPitchMax = MaxPitchAngle;
-	}
 
-	// Setup controller
-	Controller;
-	auto controller = UGameplayStatics::GetPlayerController(this->GetWorld(), 0);
-	if (controller)
-	{
-		controller->SetControlRotation(FRotator(330.0, 60.0, 0.0));
-		controller->bShowMouseCursor = true;
-		controller->DefaultMouseCursor = EMouseCursor::Default;
+		PlayerController->SetControlRotation(FRotator(330.0, 60.0, 0.0));
+		PlayerController->bShowMouseCursor = true;
+		PlayerController->DefaultMouseCursor = EMouseCursor::Default;
 	}
 }
 
@@ -79,12 +72,12 @@ void ABirdsEyePlayer::Tick(float DeltaTime)
 	
 	if (PreviewStructure)
 	{
-		auto HoveredTile = QueryTileUnderCursor();
+		const auto HoveredTile = QueryTileUnderCursor();
 		if (!HoveredTile)
 			return;
 
-		auto location = HoveredTile->GetActorLocation() + FVector(0.0, 0.0, 100.0);
-		PreviewStructure->SetActorLocation(location);
+		const auto Location = HoveredTile->GetActorLocation() + FVector(0.0, 0.0, 100.0);
+		PreviewStructure->SetActorLocation(Location);
 	}
 }
 
@@ -92,12 +85,13 @@ void ABirdsEyePlayer::Tick(float DeltaTime)
 void ABirdsEyePlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
-	if (auto Input = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	if (const auto Input = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		Input->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &ABirdsEyePlayer::Zoom);
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABirdsEyePlayer::Look);
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABirdsEyePlayer::Move);
 		Input->BindAction(SelectAction, ETriggerEvent::Triggered, this, &ABirdsEyePlayer::Select);
+		Input->BindAction(MoveTargetAction, ETriggerEvent::Triggered, this, &ABirdsEyePlayer::MoveToTarget);
 	}
 }
 
@@ -134,47 +128,70 @@ bool ABirdsEyePlayer::HasTileSelected()
 	return static_cast<bool>(SelectedTile);
 }
 
-void ABirdsEyePlayer::startBuildingStructure(TSubclassOf<ATileStructure> structure)
+void ABirdsEyePlayer::StartBuildingStructure(const TSubclassOf<ATileStructure> Structure)
 {
 	// show preview
-	if (!IsValid(structure))
+	if (!IsValid(Structure))
 		return;
 
-	auto world = GetWorld();
-	if (!IsValid(world))
+	const auto World = GetWorld();
+	if (!IsValid(World))
 		return;
 
-	auto Location = FVector::Zero();
-	auto Rotation = FRotator(0.0, 60.0 * FMath::RandRange(0, 5), 0.0);
-	PreviewStructure = world->SpawnActor<ATileStructure>(structure, Location, Rotation);
+	const auto Location = FVector::Zero();
+	const auto Rotation = FRotator(0.0, 60.0 * FMath::RandRange(0, 5), 0.0);
+	PreviewStructure = World->SpawnActor<ATileStructure>(Structure, Location, Rotation);
 }
 
-void ABirdsEyePlayer::Zoom(const FInputActionValue& Value)
+bool ABirdsEyePlayer::CanSpawnCharacter() const
 {
-	auto ArmLength = SpringArm->TargetArmLength + (Value.Get<float>() * ZoomSpeed);
+	if (!SelectedTile)
+		return false;
+
+	return SelectedTile->CanTakeCharacter();
+}
+
+void ABirdsEyePlayer::SpawnCharacter(const TSubclassOf<ANavigationCharacter> Character) const
+{
+	if (!SelectedTile || !SelectedTile->CanTakeCharacter())
+		return;
+
+	if (const auto World = GetWorld())
+	{
+		const auto Location = SelectedTile->GetActorLocation() + FVector(0.0, 0.0, 100.0);
+		const auto Rotation = FRotator::ZeroRotator;
+		const auto NewCharacter = World->SpawnActor<ANavigationCharacter>(Character, Location, Rotation);
+		NewCharacter->SetStandingTile(SelectedTile);
+	}
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst because used as Input Action cant be made const
+void ABirdsEyePlayer::Zoom(const FInputActionValue& Value) 
+{
+	const auto ArmLength = SpringArm->TargetArmLength + (Value.Get<float>() * ZoomSpeed);
 	SpringArm->TargetArmLength = FMath::Clamp(ArmLength, MinCameraZoom, MaxCameraZoom);
 }
 
 void ABirdsEyePlayer::Look(const FInputActionValue& Value)
 {
-	auto lookInput = Value.Get<FVector2D>();
+	const auto LookInput = Value.Get<FVector2D>();
 	if (Controller)
 	{
-		AddControllerYawInput(lookInput.X);
-		AddControllerPitchInput(lookInput.Y);
+		AddControllerYawInput(LookInput.X);
+		AddControllerPitchInput(LookInput.Y);
 	}
 }
 
 void ABirdsEyePlayer::Move(const FInputActionValue& Value)
 {
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	const FVector2D MovementVector = Value.Get<FVector2D>();
 	if (Controller)
 	{
 		// Calculate forward and right direction
-		auto Rotation = Controller->GetControlRotation();
+		const auto Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
-		auto ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		auto RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		const auto ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const auto RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
@@ -186,14 +203,14 @@ void ABirdsEyePlayer::Select(const FInputActionValue& Value)
 	// Finally build preview tile
 	if (PreviewStructure)
 	{
-		auto tile = QueryTileUnderCursor();
-		if (!tile)
+		const auto Tile = QueryTileUnderCursor();
+		if (!Tile)
 			return;
 
-		if (!tile->CanBuild(PreviewStructure))
+		if (!Tile->CanBuild(PreviewStructure))
 			return;
 
-		tile->Build(PreviewStructure);
+		Tile->Build(PreviewStructure);
 		PreviewStructure = nullptr;
 		return;
 	}
@@ -204,29 +221,45 @@ void ABirdsEyePlayer::Select(const FInputActionValue& Value)
 		SelectedTile->SetSelected(false);
 		SelectedTile = nullptr;
 	}
-
-	if (auto tile = QueryTileUnderCursor())
+	// Select new tile
+	if (const auto Tile = QueryTileUnderCursor())
 	{
-		tile->SetSelected(true);
-		SelectedTile = tile;
+		Tile->SetSelected(true);
+		SelectedTile = Tile;
 	}
 }
 
-ATile* ABirdsEyePlayer::QueryTileUnderCursor()
+// ReSharper disable once CppMemberFunctionMayBeConst (Input Action)
+void ABirdsEyePlayer::MoveToTarget(const FInputActionValue& Value)
 {
-	auto playerController = GetWorld()->GetFirstPlayerController();
-	if (!playerController)
+	if (!SelectedTile)
+		return;
+
+	const auto TargetTile = QueryTileUnderCursor();
+	const auto SelectedCharacter = SelectedTile->GetCharacter();
+	if (TargetTile && SelectedCharacter)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Tile Selected"));
+
+		SelectedCharacter->SetMoveTarget(TargetTile);
+	}
+}
+
+ATile* ABirdsEyePlayer::QueryTileUnderCursor() const
+{
+	const auto PlayerController = GetWorld()->GetFirstPlayerController();
+	if (!PlayerController)
 		return nullptr;
 
 	FHitResult Hit;
-	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypesArray;
-	objectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1));
-	playerController->GetHitResultUnderCursorForObjects(objectTypesArray, false, Hit);
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
+	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1));
+	PlayerController->GetHitResultUnderCursorForObjects(ObjectTypesArray, false, Hit);
 
 	if (!Hit.IsValidBlockingHit())
 		return nullptr;
 
-	auto HitActor = Hit.GetActor();
+	const auto HitActor = Hit.GetActor();
 	if (!IsValid(HitActor))
 		return nullptr;
 

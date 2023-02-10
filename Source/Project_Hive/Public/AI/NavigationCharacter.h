@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "Cube.h"
-
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "NavigationCharacter.generated.h"
+
+class ATile;
 
 UCLASS()
 class PROJECT_HIVE_API ANavigationCharacter : public ACharacter
@@ -23,10 +23,20 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void SetStandingTile(ATile* Tile);
+
+	void SetMoveTarget(ATile* TargetTile);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+		int32 MovementRange = 1;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Movement")
+		TArray<ATile*> MovementPath;
+
 private:
-	FCube GridPosition;
+	ATile* StandingTile;
 };

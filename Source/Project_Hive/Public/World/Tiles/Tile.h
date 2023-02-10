@@ -10,6 +10,7 @@
 #include "Tile.generated.h"
 
 class ATileStructure;
+class ANavigationCharacter;
 
 UCLASS()
 class PROJECT_HIVE_API ATile : public AActor
@@ -25,19 +26,26 @@ public:
 
 	// Sets the position in the grid
 	void SetGridPosition(const FCube& Position);
-	
+	FCube GetGridPosition() { return GridPosition; }
+
 	void AddNeighbor(ATile* Neighbor);
 
 	// Renders a highlight outline 
-	void SetSelected(bool IsSelected);
+	void SetSelected(bool IsSelected) const;
 
 	virtual bool CanBuild();
 
 	virtual bool CanBuild(ATileStructure* NewStructure);
 	virtual void Build(ATileStructure* NewStructure);
 	
-	bool CanDestroyBuilding();
+	bool CanDestroyBuilding() const;
 	void DestroyBuilding();
+
+	virtual bool CanTakeCharacter();
+	bool TakeCharacter(ANavigationCharacter* NewCharacter);
+	ANavigationCharacter* GetCharacter() const { return Character; }
+
+	TArray<ATile*> GetNeighbors() { return Neighbors; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -53,8 +61,11 @@ protected:
 		EFoundationType TileFoundationType;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Tile Settings")
-	ATileStructure* Structure = nullptr;
-	
+		ATileStructure* Structure = nullptr;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Tile Settings")
+		ANavigationCharacter* Character = nullptr;
+
 	FCube GridPosition;
 	TArray<ATile*> Neighbors;
 };
