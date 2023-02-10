@@ -7,10 +7,10 @@
 #include "GameFramework/Actor.h"
 #include "HexGrid.generated.h"
 
-class Cube;
+class FCube;
 
 UCLASS()
-class PROJECT_HIVE_API AHexGrid : public AActor
+class PROJECT_HIVE_API AHexGrid final : public AActor
 {
 	GENERATED_BODY()
 public:	
@@ -75,13 +75,15 @@ protected:
 private:
 	void GenerateCircle();
 	// Returns the world-location for the grid coordinate
-	FVector WorldLocation(const Cube& gridPosition);
+	FVector WorldLocation(const FCube& GridPosition);
 	// Spawn a Tile at gridPosition 
-	void SpawnTile(const Cube& gridPosition, TSubclassOf<ATile> tileToSpawn);
+	void SpawnTile(const FCube& GridPosition, TSubclassOf<ATile> TileToSpawn);
 	// Returns a tile based on value
-	TSubclassOf<ATile> GetTileFor(const Cube& gridPos, float value);
+	TSubclassOf<ATile> GetTileFor(const FCube& GridPos, float Value);
 	void CalculateNeighbors();
+	
+	// ReSharper disable once CppUE4ProbableMemoryIssuesWithUObjectsInContainer because FCube is not a UClass
+	TMap<FCube, ATile*> Grid;
 
 	FVector GridOrigin;
-	TMap<Cube, ATile*> Grid;
 };

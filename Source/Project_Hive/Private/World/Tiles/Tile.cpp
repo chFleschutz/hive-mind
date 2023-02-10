@@ -79,13 +79,13 @@ void ATile::Tick(float DeltaTime)
 
 }
 
-void ATile::setGridPosition(const Cube& position)
+void ATile::SetGridPosition(const FCube& Position)
 {
-	GridPosition = position;
+	GridPosition = Position;
 }
 
-void ATile::addNeighbor(ATile* neighbor)
+void ATile::AddNeighbor(ATile* Neighbor)
 {
-	Neighbors.Emplace(neighbor);
+	Neighbors.Emplace(Neighbor);
 }
 

@@ -10,23 +10,23 @@
  * 
  */
 UCLASS()
-class PROJECT_HIVE_API UPerlinNoiseGenerator : public URandomTerrainGenerator
+class PROJECT_HIVE_API UPerlinNoiseGenerator final : public URandomTerrainGenerator
 {
 	GENERATED_BODY()
 	
 public:
-	void initialize(int32 tileGridSize, int32 noiseCellSize, uint32 seed = 0);
+	void Initialize(int32 TileGridSize, int32 NoiseCellSize, uint32 InitSeed = 0);
 
 	/** Returns the perlin noise value for the position (value between -1 and 1) */
-	float perlinNoise2D(int32 posX, int32 posY);
+	float PerlinNoise2D(int32 PosX, int32 PosY);
 
 protected:
 	// Returns a random unit FVector2D 
-	FVector2D randomVec();
+	FVector2D RandomVec() const;
 
-	float CornerGradientDotProduct(int32 cornerPosX, int32 cornerPosY, float posX, float posY);
+	float CornerGradientDotProduct(int32 CornerPosX, int32 CornerPosY, float PosX, float PosY);
 
-	FVector2D noiseVec(uint32 x, uint32 y);
+	FVector2D NoiseVec(uint32 X, uint32 Y);
 
 	TArray<FVector2D> Noise;
 	int32 GridSize;

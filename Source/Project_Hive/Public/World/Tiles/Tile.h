@@ -24,9 +24,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Sets the position in the grid
-	void setGridPosition(const Cube& position);
+	void SetGridPosition(const FCube& Position);
 	
-	void addNeighbor(ATile* neighbor);
+	void AddNeighbor(ATile* Neighbor);
 
 	// Renders a highlight outline 
 	void SetSelected(bool IsSelected);
@@ -52,8 +52,9 @@ protected:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Tile Settings")
 		EFoundationType TileFoundationType;
 
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Tile Settings")
 	ATileStructure* Structure = nullptr;
 	
-	Cube GridPosition;
+	FCube GridPosition;
 	TArray<ATile*> Neighbors;
 };

@@ -7,46 +7,44 @@
 /**
  * 
  */
-class PROJECT_HIVE_API Cube
+class PROJECT_HIVE_API FCube 
 {
 public:
-	Cube();
-	~Cube();
-	Cube(int32 q, int32 r);
-	Cube(const Cube& other);
+	FCube();
+	FCube(int32 Q, int32 R);
+	FCube(const FCube& Other);
 
-	inline int32 Q() const { return m_Q; }
-	inline int32 R() const { return m_R; }
-	inline int32 S() const { return m_S; }
+	inline int32 Q() const { return M_Q; }
+	inline int32 R() const { return M_R; }
+	inline int32 S() const { return M_S; }
 
-	void SetQ(int32 newQ);
-	void SetR(int32 newR);
+	void SetQ(int32 NewQ);
+	void SetR(int32 NewR);
 
-	Cube& operator=(const Cube& other);
+	FCube& operator=(const FCube& Other);
 
-	Cube operator+(const Cube& other) const;
-	Cube& operator+=(const Cube& other);
+	FCube operator+(const FCube& Other) const;
+	FCube& operator+=(const FCube& Other);
 
-	Cube operator-(const Cube& other) const;
-	Cube& operator-=(const Cube& other);
+	FCube operator-(const FCube& Other) const;
+	FCube& operator-=(const FCube& Other);
 
-	bool operator==(const Cube& other) const;
+	bool operator==(const FCube& Other) const;
 
-	static Cube Zero();
+	static FCube Zero();
 
-	static int32 distance(const Cube& a, const Cube& b);
+	static int32 Distance(const FCube& A, const FCube& B);
 
-	static TArray<Cube> directionVectors();
+	static TArray<FCube> DirectionVectors();
 
 private:
 	// Coordinates q, r, s (constraint q + r + s = 0)
-	int32 m_Q = 0;
-	int32 m_R = 0;
-	int32 m_S = 0;	//< Precomputed s coordinate read only 
+	int32 M_Q = 0;
+	int32 M_R = 0;
+	int32 M_S = 0;	//< Precomputed s coordinate read only 
 };
 
-FORCEINLINE uint32 GetTypeHash(const Cube& cube)
+FORCEINLINE uint32 GetTypeHash(const FCube& Cube)
 {
-	uint32 Hash = FCrc::MemCrc32(&cube, sizeof(Cube));
-	return Hash;
+	return FCrc::MemCrc32(&Cube, sizeof(FCube));
 }

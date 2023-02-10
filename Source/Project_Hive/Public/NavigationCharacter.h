@@ -28,5 +28,5 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	Cube GridPosition;
+	FCube GridPosition;
 };

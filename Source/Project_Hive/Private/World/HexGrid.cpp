@@ -41,17 +41,17 @@ void AHexGrid::GenerateCircle()
 		RandomizeSeed();
 
 	auto gen = NewObject<UPerlinNoiseGenerator>();
-	gen->initialize(2 * GridSize + 1, NoiseCellSize, Seed);
+	gen->Initialize(2 * GridSize + 1, NoiseCellSize, Seed);
 
 	for (int32 q = -GridSize; q <= GridSize; q++)
 	{
 		for (int32 r = -GridSize; r <= GridSize; r++)
 		{
-			auto coord = Cube(q, r);
-			if (Cube::distance(coord, Cube::Zero()) > GridSize)
+			auto coord = FCube(q, r);
+			if (FCube::Distance(coord, FCube::Zero()) > GridSize)
 				continue;
 			
-			auto tileType = GetTileFor(coord, gen->perlinNoise2D(q, r));
+			auto tileType = GetTileFor(coord, gen->PerlinNoise2D(q, r));
 			SpawnTile(coord, tileType);
 		}
 	}
@@ -73,42 +73,42 @@ void AHexGrid::RandomizeSeed()
 	Seed = FMath::Rand();
 }
 
-FVector AHexGrid::WorldLocation(const Cube& gridPosition)
+FVector AHexGrid::WorldLocation(const FCube& GridPosition)
 {
-	auto x = sqrt(3) * GridCellSize * (gridPosition.Q() + 0.5 * gridPosition.R());
-	auto y = 3.0 / 2.0 * GridCellSize * gridPosition.R();
+	auto x = sqrt(3) * GridCellSize * (GridPosition.Q() + 0.5 * GridPosition.R());
+	auto y = 3.0 / 2.0 * GridCellSize * GridPosition.R();
 	return GridOrigin + FVector(x, y, 0.0);
 }
 
-void AHexGrid::SpawnTile(const Cube& gridPosition, TSubclassOf<ATile> tileToSpawn)
+void AHexGrid::SpawnTile(const FCube& GridPosition, TSubclassOf<ATile> TileToSpawn)
 {
 	auto world = GetWorld();
 	if (!IsValid(world))
 		return;
 
-	if (!IsValid(tileToSpawn))
+	if (!IsValid(TileToSpawn))
 		return;
 
-	auto location = WorldLocation(gridPosition);
+	auto location = WorldLocation(GridPosition);
 	auto rotation = GetActorRotation();
-	auto tile = world->SpawnActor<ATile>(tileToSpawn, location, rotation);
+	auto tile = world->SpawnActor<ATile>(TileToSpawn, location, rotation);
 
 	if (!IsValid(tile))
 		return;
 
-	tile->setGridPosition(gridPosition);
+	tile->SetGridPosition(GridPosition);
 	tile->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
-	Grid.Add(gridPosition, tile);
+	Grid.Add(GridPosition, tile);
 }
 
-TSubclassOf<ATile> AHexGrid::GetTileFor(const Cube& gridPos, float value)
+TSubclassOf<ATile> AHexGrid::GetTileFor(const FCube& GridPos, float Value)
 {
-	value = value + 1.0f;
-	if (value < SandValue)
+	Value = Value + 1.0f;
+	if (Value < SandValue)
 		return SandTile;
 
-	value = value - SandValue;
-	if (value < WaterValue)
+	Value = Value - SandValue;
+	if (Value < WaterValue)
 		return WaterTile;
 
 	return GrassTile;
@@ -120,11 +120,11 @@ void AHexGrid::CalculateNeighbors()
 	{
 		auto tile = Element.Value;
 		auto position = Element.Key;
-		for (const auto& direction : Cube::directionVectors())
+		for (const auto& direction : FCube::DirectionVectors())
 		{
 			auto neighborPosition = position + direction;
 			if (auto neighbor = Grid.Find(neighborPosition))
-				tile->addNeighbor(*neighbor);
+				tile->AddNeighbor(*neighbor);
 		}
 	}
 }

@@ -14,5 +14,5 @@ class PROJECT_HIVE_API ASandTile : public ATile
 {
 	GENERATED_BODY()
 public:
-	virtual bool CanBuild();
+	virtual bool CanBuild() override;
 };

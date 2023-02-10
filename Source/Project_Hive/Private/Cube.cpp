@@ -4,92 +4,88 @@
 #include "Cube.h"
 
 
-Cube::Cube()
+FCube::FCube()
 {
 }
 
-Cube::~Cube()
+FCube::FCube(const int32 Q, const int32 R)
 {
+	M_Q = Q;
+	M_R = R;
+	M_S = -M_Q - M_R;	//< Make sure Q + R + S = 0
 }
 
-Cube::Cube(int32 q, int32 r)
+FCube::FCube(const FCube& Other)
 {
-	m_Q = q;
-	m_R = r;
-	m_S = -m_Q - m_R;	//< Make sure Q + R + S = 0
+	M_Q = Other.Q();
+	M_R = Other.R();
+	M_S = Other.S();
 }
 
-Cube::Cube(const Cube& other)
+void FCube::SetQ(const int32 NewQ)
 {
-	m_Q = other.Q();
-	m_R = other.R();
-	m_S = other.S();
+	M_Q = NewQ;
+	M_S = -M_Q - M_R;	//< Make sure Q + R + S = 0
 }
 
-void Cube::SetQ(int32 newQ)
+void FCube::SetR(const int32 NewR)
 {
-	m_Q = newQ;
-	m_S = -m_Q - m_R;	//< Make sure Q + R + S = 0
+	M_R = NewR;
+	M_S = -M_Q - M_R;	//< Make sure Q + R + S = 0
 }
 
-void Cube::SetR(int32 newR)
+FCube& FCube::operator=(const FCube& Other)
 {
-	m_R = newR;
-	m_S = -m_Q - m_R;	//< Make sure Q + R + S = 0
-}
-
-Cube& Cube::operator=(const Cube& other)
-{
-	m_Q = other.Q();
-	m_R = other.R();
-	m_S = other.S();
+	M_Q = Other.Q();
+	M_R = Other.R();
+	M_S = Other.S();
 	return *this;
 }
 
-Cube Cube::operator+(const Cube& other) const
+FCube FCube::operator+(const FCube& Other) const
 {
-	return Cube(m_Q + other.Q(), m_R + other.R());
+	return FCube(M_Q + Other.Q(), M_R + Other.R());
 }
 
-Cube& Cube::operator+=(const Cube& other)
+FCube& FCube::operator+=(const FCube& Other)
 {
-	m_Q += other.Q();
-	m_R += other.R();
-	m_S += other.S();
+	M_Q += Other.Q();
+	M_R += Other.R();
+	M_S += Other.S();
 	return *this;
 }
 
-Cube Cube::operator-(const Cube& other) const
+FCube FCube::operator-(const FCube& Other) const
 {
-	return Cube(m_Q - other.Q(), m_R - other.R());
+	return FCube(M_Q - Other.Q(), M_R - Other.R());
 }
 
-Cube& Cube::operator-=(const Cube& other)
+FCube& FCube::operator-=(const FCube& Other)
 {
-	m_Q -= other.Q();
-	m_R -= other.R();
-	m_S -= other.S();
+	M_Q -= Other.Q();
+	M_R -= Other.R();
+	M_S -= Other.S();
 	return *this;
 }
 
-bool Cube::operator==(const Cube& other) const
+bool FCube::operator==(const FCube& Other) const
 {
-	return (m_Q == other.Q()) && (m_R == other.R()) && (m_S == other.S());
+	return (M_Q == Other.Q()) && (M_R == Other.R()) && (M_S == Other.S());
 }
 
-Cube Cube::Zero()
+FCube FCube::Zero()
 {
-	return Cube(0, 0);
+	return FCube(0, 0);
 }
 
-int32 Cube::distance(const Cube& a, const Cube& b)
+int32 FCube::Distance(const FCube& A, const FCube& B)
 {
-	auto cube = a - b;
-	return (abs(cube.Q()) + abs(cube.R()) + abs(cube.S())) / 2;
+	const auto Cube = A - B;
+	return (abs(Cube.Q()) + abs(Cube.R()) + abs(Cube.S())) / 2;
 }
 
-TArray<Cube> Cube::directionVectors()
+TArray<FCube> FCube::DirectionVectors()
 {
-	return TArray<Cube>() = { Cube(0, -1), Cube(1, -1), Cube(1, 0), Cube(0, 1), Cube(-1, 1), Cube(-1, 0) };
+	return TArray<FCube>() = { FCube(0, -1), FCube(1, -1), FCube(1, 0), FCube(0, 1), FCube(-1, 1), FCube(-1, 0) };
 }
 

@@ -55,6 +55,8 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Select(const FInputActionValue& Value);
 
+	ATile* QueryTileUnderCursor();
+
 	// Components
 	//
 	/** An invisible Mesh Component */
@@ -95,7 +97,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Settings")
 		float MaxPitchAngle = 360.0f;
 
-	// Gameplay
+	// Game-play
 	//
 	/** Default Build Structure */
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Structure")
@@ -123,11 +125,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
 		class UInputAction* SelectAction;
 
-private:
-	ATile* QueryTileUnderCursor();
-
-	// Members
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Grid")
 	ATile* SelectedTile = nullptr;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Grid")
 	ATileStructure* PreviewStructure;
 };
