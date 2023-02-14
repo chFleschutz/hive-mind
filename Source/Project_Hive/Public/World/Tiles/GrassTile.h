@@ -17,5 +17,5 @@ class PROJECT_HIVE_API AGrassTile : public ATile
 public:
 	AGrassTile() = default;
 
-	virtual bool CanBuild() override;
+	virtual bool CanBuild(ATileStructure* NewStructure) override;
 };

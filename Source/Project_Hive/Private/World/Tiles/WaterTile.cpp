@@ -4,7 +4,7 @@
 #include "World/Tiles/WaterTile.h"
 
 
-bool AWaterTile::CanBuild()
+bool AWaterTile::CanBuild(ATileStructure* NewStructure)
 {
     return false;
 }

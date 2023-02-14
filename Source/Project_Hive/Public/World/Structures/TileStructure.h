@@ -1,22 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2023 Christoph Fleschutz. All Rights Reserved.
 
 #pragma once
+
+#include "World/Tiles/Tile.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "TileStructure.generated.h"
-
-/** Foundation type of tiles */
-UENUM(BlueprintType)
-enum class EFoundationType : uint8
-{
-	FT_Grass	UMETA(DisplayName = "Grass"),
-	FT_Sand		UMETA(DisplayName = "Sand"),
-	FT_Water	UMETA(DisplayName = "Water"),
-
-	FT_Max		UMETA(Hidden),
-};
-
 
 UCLASS()
 class PROJECT_HIVE_API ATileStructure : public AActor
@@ -31,7 +21,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	bool CheckFoundationSupport(EFoundationType Foundation);
+	virtual bool CheckFoundationSupport(EFoundationType Foundation) const;
 
 protected:
 	// Called when the game starts or when spawned

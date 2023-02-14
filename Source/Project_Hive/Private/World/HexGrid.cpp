@@ -40,30 +40,30 @@ void AHexGrid::GenerateCircle()
 	if (AutoGenerateRandomSeed)
 		RandomizeSeed();
 
-	auto gen = NewObject<UPerlinNoiseGenerator>();
-	gen->Initialize(2 * GridSize + 1, NoiseCellSize, Seed);
+	const auto Gen = NewObject<UPerlinNoiseGenerator>();
+	Gen->Initialize(2 * GridSize + 1, NoiseCellSize, Seed);
 
 	for (int32 q = -GridSize; q <= GridSize; q++)
 	{
 		for (int32 r = -GridSize; r <= GridSize; r++)
 		{
-			auto coord = FCube(q, r);
-			if (FCube::Distance(coord, FCube::Zero()) > GridSize)
+			auto Cord = FCube(q, r);
+			if (FCube::Distance(Cord, FCube::Zero()) > GridSize)
 				continue;
-			
-			auto tileType = GetTileFor(coord, gen->PerlinNoise2D(q, r));
-			SpawnTile(coord, tileType);
+
+			const auto Value = (Gen->PerlinNoise2D(q, r) + 1.0f) / 2.0f; // Map to 0 - 1 Range
+			SpawnTileAt(Cord, Value);
 		}
 	}
 
-	CalculateNeighbors();
+	SetAllNeighbors();
 }
 
 void AHexGrid::DestroyTiles()
 {
-	for (auto& entry : Grid)
+	for (const auto& Entry : Grid)
 	{
-		entry.Value->Destroy();
+		Entry.Value->Destroy();
 	}
 	Grid.Empty();
 }
@@ -73,58 +73,139 @@ void AHexGrid::RandomizeSeed()
 	Seed = FMath::Rand();
 }
 
-FVector AHexGrid::WorldLocation(const FCube& GridPosition)
+FVector AHexGrid::WorldLocation(const FCube& GridPosition) const
 {
-	auto x = sqrt(3) * GridCellSize * (GridPosition.Q() + 0.5 * GridPosition.R());
-	auto y = 3.0 / 2.0 * GridCellSize * GridPosition.R();
+	const auto x = sqrt(3) * GridCellSize * (GridPosition.Q() + 0.5 * GridPosition.R());
+	const auto y = 3.0 / 2.0 * GridCellSize * GridPosition.R();
 	return GridOrigin + FVector(x, y, 0.0);
 }
 
-void AHexGrid::SpawnTile(const FCube& GridPosition, TSubclassOf<ATile> TileToSpawn)
+ATile* AHexGrid::SpawnTile(const FCube& GridPosition, const TSubclassOf<ATile> TileToSpawn)
 {
-	auto world = GetWorld();
-	if (!IsValid(world))
-		return;
+	const auto World = GetWorld();
+	if (!IsValid(World))
+		return nullptr;
 
 	if (!IsValid(TileToSpawn))
-		return;
+		return nullptr;
 
-	auto location = WorldLocation(GridPosition);
-	auto rotation = GetActorRotation();
-	auto tile = world->SpawnActor<ATile>(TileToSpawn, location, rotation);
+	const auto Location = WorldLocation(GridPosition);
+	const auto Rotation = GetActorRotation();
+	const auto Tile = World->SpawnActor<ATile>(TileToSpawn, Location, Rotation);
 
-	if (!IsValid(tile))
-		return;
+	if (!IsValid(Tile))
+		return nullptr;
 
-	tile->SetGridPosition(GridPosition);
-	tile->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
-	Grid.Add(GridPosition, tile);
+	Tile->SetGridPosition(GridPosition);
+	Tile->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+	Grid.Add(GridPosition, Tile);
+
+	return Tile;
 }
 
-TSubclassOf<ATile> AHexGrid::GetTileFor(const FCube& GridPos, float Value)
+TSubclassOf<ATile> AHexGrid::GetTileFor(const FCube& GridPos, float Value) const
 {
-	Value = Value + 1.0f;
-	if (Value < SandValue)
-		return SandTile;
+	//Value = Value + 1.0f;
+	//if (Value < SandValue)
+	//	return SandTile;
 
-	Value = Value - SandValue;
-	if (Value < WaterValue)
-		return WaterTile;
+	//Value = Value - SandValue;
+	//if (Value < WaterValue)
+	//	return WaterTile;
 
-	return GrassTile;
-}
-
-void AHexGrid::CalculateNeighbors()
-{
-	for (auto& Element : Grid)
+	//return GrassTile;
+	
+	const auto SumValues = SandValue + WaterValue + GrassValue;
+	if (Value < (SandValue / SumValues))
 	{
-		auto tile = Element.Value;
-		auto position = Element.Key;
-		for (const auto& direction : FCube::DirectionVectors())
+		return SandTile;
+	}
+	else if (Value < (SandValue + WaterValue) / SumValues)
+	{
+		return WaterTile;
+	}
+	else
+	{
+		return GrassTile;
+	}
+}
+
+void AHexGrid::SpawnTileAt(const FCube& GridPos, const float Value)
+{
+	//const auto SumValues = SandValue + WaterValue + GrassValue;
+	//if (Value < SandValue / SumValues)
+	//{	// Sand Tile
+	//	const auto Tile = SpawnTile(GridPos, SandTile);
+	//	// Vegetation and Mountain in middle of patch
+	//	//if (Value < MountainAmount)
+	//	//{
+	//	//	Tile->BuildMountain();
+	//	//}
+	//	if (Value > ForestAmount && Value < (SandValue / SumValues) - ForestAmount)
+	//	{
+	//		Tile->BuildVegetation();
+	//	}
+	//}
+	//else if (Value < (SandValue + WaterValue) / SumValues)
+	//{	// Water Tile
+	//	const auto Tile = SpawnTile(GridPos, WaterTile);
+	//}
+	//else
+	//{	// Grass Tile
+	//	const auto Tile = SpawnTile(GridPos, GrassTile);
+	//	// Vegetation and Mountain in middle of patch
+	//	if (Value > SumValues - MountainAmount)
+	//	{
+	//		Tile->BuildMountain();
+	//	}
+	//	else if (Value > (SandValue + WaterValue) / SumValues + ForestAmount && Value < SumValues - ForestAmount)
+	//	{
+	//		Tile->BuildVegetation();
+	//	}
+	//}
+
+	const auto SumValues = SandValue + WaterValue + GrassValue;
+	if (Value < SandValue / SumValues)
+	{	// Sand Tile
+		const auto Tile = SpawnTile(GridPos, SandTile);
+		if (Value < MountainAmount)
 		{
-			auto neighborPosition = position + direction;
-			if (auto neighbor = Grid.Find(neighborPosition))
-				tile->AddNeighbor(*neighbor);
+			Tile->BuildMountain();
+		}
+		else if (Value < DesertVegetationAmount)
+		{
+			Tile->BuildVegetation();
+		}
+	}
+	else if (Value < (SandValue + WaterValue) / SumValues)
+	{	// Water Tile
+		SpawnTile(GridPos, WaterTile);
+	}
+	else
+	{	// Grass Tile
+		const auto Tile = SpawnTile(GridPos, GrassTile);
+		if (Value > 1.0f - MountainAmount)
+		{
+			Tile->BuildMountain();
+		}
+		else if (Value > 1.0f - ForestAmount)
+		{
+			Tile->BuildVegetation();
+		}
+	}
+}
+
+void AHexGrid::SetAllNeighbors()
+{
+	for (const auto& Element : Grid)
+	{
+		const auto Tile = Element.Value;
+		auto Position = Element.Key;
+		for (const auto& Direction : FCube::DirectionVectors())
+		{
+			auto NeighborPosition = Position + Direction;
+			if (const auto Neighbor = Grid.Find(NeighborPosition))
+				Tile->AddNeighbor(*Neighbor);
 		}
 	}
 }

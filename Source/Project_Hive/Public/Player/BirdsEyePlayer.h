@@ -10,6 +10,9 @@ class ATile;
 class ATileStructure;
 class UInputAction;
 class UInputComponent;
+class UInputMappingContext;
+class UStaticMeshComponent;
+
 struct FInputActionValue;
 
 UCLASS()
@@ -28,18 +31,6 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
-		void BuildOnSelectedTile();
-
-	UFUNCTION(BlueprintCallable)
-		void DestroyBuildingOnSelectedTile();
-
-	UFUNCTION(BlueprintCallable)
-		bool CanBuild();
-
-	UFUNCTION(BlueprintCallable)
-		bool CanDestroyBuilding();
-
-	UFUNCTION(BlueprintCallable)
 		bool HasTileSelected();
 
 	UFUNCTION(BlueprintCallable)
@@ -49,7 +40,7 @@ public:
 		bool CanSpawnCharacter() const;
 
 	UFUNCTION(BlueprintCallable)
-		void SpawnCharacter(TSubclassOf<class ANavigationCharacter> Character) const;
+		void SpawnUnit(TSubclassOf<class ANavigableUnit> Unit) const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -69,7 +60,7 @@ protected:
 	//
 	/** An invisible Mesh Component */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components|Mesh")
-		class UStaticMeshComponent* InvisibleMesh;
+		UStaticMeshComponent* InvisibleMesh;
 	
 	/** Camera Component */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components|Camera")
@@ -115,7 +106,7 @@ protected:
 	//
 	/** Mapping Context */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-		class UInputMappingContext* InputMapping;
+		UInputMappingContext* InputMapping;
 
 	/** Zoom Input Action*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")

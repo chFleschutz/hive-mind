@@ -1,5 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright 2023 Christoph Fleschutz. All Rights Reserved.
 
 #include "World/Structures/TileStructure.h"
 
@@ -20,7 +19,8 @@ ATileStructure::ATileStructure()
 void ATileStructure::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	TileStructureMesh->SetCollisionObjectType(ECC_GameTraceChannel2);
 }
 
 // Called every frame
@@ -30,7 +30,7 @@ void ATileStructure::Tick(float DeltaTime)
 
 }
 
-bool ATileStructure::CheckFoundationSupport(EFoundationType Foundation)
+bool ATileStructure::CheckFoundationSupport(const EFoundationType Foundation) const
 {
 	return SupportedFoundationTypes.Contains(Foundation);
 }

@@ -1,15 +1,16 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright 2023 Christoph Fleschutz. All Rights Reserved.
 
 #include "AI/AStarNavigation.h"
 
 #include "World/Tiles/Tile.h"
+#include "AI/NavigableUnit.h"
 #include "Utility/PriorityQueue.h"
 
-TArray<ATile*> UAStarNavigation::GetPath(ATile* StartTile, ATile* GoalTile)
+
+TArray<ATile*> UAStarNavigation::GetPath(ATile* StartTile, ATile* GoalTile, ANavigableUnit* Unit)
 {
 	TPriorityQueue<ATile*> Frontier;
-	Frontier.Push(StartTile, 0);
+	Frontier.Push(StartTile, 0.0f);
 
 	TMap<ATile*, ATile*> CameFromTile;
 	CameFromTile.Add(StartTile, nullptr);
@@ -26,7 +27,10 @@ TArray<ATile*> UAStarNavigation::GetPath(ATile* StartTile, ATile* GoalTile)
 
 		for (const auto NextTile : CurrentTile->GetNeighbors())
 		{
-			const auto NewCost = CostUntilTile[CurrentTile] + 1; 	// TODO: Add cost to tiles
+			if (!Unit->CanMoveTo(NextTile)) //< Skip impossible tiles
+				continue;
+
+			const auto NewCost = CostUntilTile[CurrentTile] + TravelCost(CurrentTile, NextTile); 
 			if (!CostUntilTile.Contains(NextTile) || NewCost < CostUntilTile[NextTile])
 			{
 				CostUntilTile.Emplace(NextTile, NewCost);
@@ -37,7 +41,10 @@ TArray<ATile*> UAStarNavigation::GetPath(ATile* StartTile, ATile* GoalTile)
 		}
 	}
 
-	// Query best path
+	// Retrieve best path
+	if (!CameFromTile.Contains(GoalTile))
+		return TArray<ATile*>();
+
 	TArray<ATile*> Path;
 	auto CurrentTile = GoalTile;
 	while (CurrentTile != StartTile)
@@ -48,7 +55,14 @@ TArray<ATile*> UAStarNavigation::GetPath(ATile* StartTile, ATile* GoalTile)
 	return Path;
 }
 
-float UAStarNavigation::Heuristic(ATile* StartTile, ATile* GoalTile)
+float UAStarNavigation::Heuristic(ATile* CurrentTile, ATile* GoalTile)
 {
-	return FCube::Distance(StartTile->GetGridPosition(), GoalTile->GetGridPosition());
+	return FCube::Distance(CurrentTile->GetGridPosition(), GoalTile->GetGridPosition());
+}
+
+int32 UAStarNavigation::TravelCost(ATile* StartTile, ATile* NextTile)
+{
+	// TODO: Get Travel cost between Tiles
+	
+	return 1;
 }

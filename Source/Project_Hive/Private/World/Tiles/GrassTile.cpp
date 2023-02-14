@@ -5,7 +5,7 @@
 #include "World/Structures/TileStructure.h"
 
 
-bool AGrassTile::CanBuild()
+bool AGrassTile::CanBuild(ATileStructure* NewStructure)
 {
 	return static_cast<bool>(!Structure);
 }

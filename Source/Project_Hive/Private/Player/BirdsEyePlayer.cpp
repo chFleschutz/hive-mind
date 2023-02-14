@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2023 Christoph Fleschutz. All Rights Reserved.
 
 #include "Player/BirdsEyePlayer.h"
 
@@ -9,7 +9,7 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "AI/NavigationCharacter.h"
+#include "AI/NavigableUnit.h"
 
 #include "World/Tiles/Tile.h"
 #include "World/Structures/TileStructure.h"
@@ -59,7 +59,7 @@ void ABirdsEyePlayer::BeginPlay()
 		PlayerController->PlayerCameraManager->ViewPitchMin = MinPitchAngle;
 		PlayerController->PlayerCameraManager->ViewPitchMax = MaxPitchAngle;
 
-		PlayerController->SetControlRotation(FRotator(330.0, 60.0, 0.0));
+		PlayerController->SetControlRotation(FRotator(300.0, 0.0, 0.0));
 		PlayerController->bShowMouseCursor = true;
 		PlayerController->DefaultMouseCursor = EMouseCursor::Default;
 	}
@@ -95,34 +95,6 @@ void ABirdsEyePlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	}
 }
 
-void ABirdsEyePlayer::BuildOnSelectedTile()
-{
-	//if (SelectedTile)
-	//	SelectedTile->Build(DefaultStructure);
-}
-
-void ABirdsEyePlayer::DestroyBuildingOnSelectedTile()
-{
-	if (SelectedTile)
-		SelectedTile->DestroyBuilding();
-}
-
-bool ABirdsEyePlayer::CanBuild()
-{
-	if (!SelectedTile)
-		return false;
-
-	return SelectedTile->CanBuild();
-}
-
-bool ABirdsEyePlayer::CanDestroyBuilding()
-{
-	if (!SelectedTile)
-		return false;
-
-	return SelectedTile->CanDestroyBuilding();
-}
-
 bool ABirdsEyePlayer::HasTileSelected()
 {
 	return static_cast<bool>(SelectedTile);
@@ -148,19 +120,19 @@ bool ABirdsEyePlayer::CanSpawnCharacter() const
 	if (!SelectedTile)
 		return false;
 
-	return SelectedTile->CanTakeCharacter();
+	return SelectedTile->CanPlaceUnit();
 }
 
-void ABirdsEyePlayer::SpawnCharacter(const TSubclassOf<ANavigationCharacter> Character) const
+void ABirdsEyePlayer::SpawnUnit(const TSubclassOf<ANavigableUnit> Unit) const
 {
-	if (!SelectedTile || !SelectedTile->CanTakeCharacter())
+	if (!SelectedTile->CanPlaceUnit())
 		return;
 
 	if (const auto World = GetWorld())
 	{
 		const auto Location = SelectedTile->GetActorLocation() + FVector(0.0, 0.0, 100.0);
 		const auto Rotation = FRotator::ZeroRotator;
-		const auto NewCharacter = World->SpawnActor<ANavigationCharacter>(Character, Location, Rotation);
+		const auto NewCharacter = World->SpawnActor<ANavigableUnit>(Unit, Location, Rotation);
 		NewCharacter->SetStandingTile(SelectedTile);
 	}
 }
@@ -236,11 +208,9 @@ void ABirdsEyePlayer::MoveToTarget(const FInputActionValue& Value)
 		return;
 
 	const auto TargetTile = QueryTileUnderCursor();
-	const auto SelectedCharacter = SelectedTile->GetCharacter();
+	const auto SelectedCharacter = SelectedTile->GetUnit();
 	if (TargetTile && SelectedCharacter)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Tile Selected"));
-
 		SelectedCharacter->SetMoveTarget(TargetTile);
 	}
 }

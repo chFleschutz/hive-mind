@@ -4,7 +4,7 @@
 #include "World/Tiles/SandTile.h"
 
 
-bool ASandTile::CanBuild()
+bool ASandTile::CanBuild(ATileStructure* NewStructure)
 {
     return false;
 }

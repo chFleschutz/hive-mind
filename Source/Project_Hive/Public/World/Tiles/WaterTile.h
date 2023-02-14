@@ -15,5 +15,5 @@ class PROJECT_HIVE_API AWaterTile : public ATile
 	GENERATED_BODY()
 	
 public:
-	virtual bool CanBuild() override;
+	virtual bool CanBuild(ATileStructure* NewStructure) override;
 };

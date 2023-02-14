@@ -1,8 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2023 Christoph Fleschutz. All Rights Reserved.
 
 #include "World/Tiles/Tile.h"
 
-
+#include "AI/NavigableUnit.h"
+#include "World/Structures/TileStructure.h"
+#include "World/Structures/TileVegetation.h"
 
 // Sets default values
 ATile::ATile()
@@ -14,19 +16,48 @@ ATile::ATile()
 
 	HexTileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tile"));
 	HexTileMesh->SetupAttachment(RootComponent);
+
+	CenterSocket = CreateDefaultSubobject<USceneComponent>(TEXT("Center Socket"));
+	CenterSocket->SetupAttachment((HexTileMesh));
 }
 
-void ATile::SetSelected(const bool IsSelected) const
+// Called when the game starts or when spawned
+void ATile::BeginPlay()
+{
+	Super::BeginPlay();
+
+	HexTileMesh->SetCollisionObjectType(ECC_GameTraceChannel1);
+}
+
+// Called every frame
+void ATile::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
+void ATile::SetSelected(const bool IsSelected)
 {
 	if (HexTileMesh)
 	{
+		IsTileSelected = IsSelected;
 		HexTileMesh->SetRenderCustomDepth(IsSelected);
 	}
 }
 
-bool ATile::CanBuild()
+void ATile::SetNeighborsSelected(const bool IsSelected, const int32 Depth) 
 {
-	return static_cast<bool>(!Structure);
+	if (Depth <= 0)
+		return;
+
+	for (const auto Neighbor : Neighbors)
+	{
+		if (Neighbor->GetIsSelected() == IsSelected)
+			continue;
+
+		Neighbor->SetSelected(IsSelected);
+		Neighbor->SetNeighborsSelected(IsSelected, Depth - 1);
+	}
 }
 
 bool ATile::CanDestroyBuilding() const
@@ -49,10 +80,7 @@ void ATile::Build(ATileStructure* NewStructure)
 	if (!CanBuild(NewStructure))
 		return;
 
-	Structure = NewStructure;
-	Structure->SetActorLocation(this->GetActorLocation() + FVector(0.0, 0.0, 100.0)); //< Make sure it is in the right spot
-	const FAttachmentTransformRules Rules(EAttachmentRule::KeepWorld, false);
-	Structure->AttachToActor(this, Rules);
+	AppendStructure(NewStructure);
 }
 
 void ATile::DestroyBuilding()
@@ -64,33 +92,41 @@ void ATile::DestroyBuilding()
 	}
 }
 
-bool ATile::CanTakeCharacter()
+bool ATile::CanPlaceUnit()
 {
-	return !Character;
+	return !PlacedUnit;
 }
 
-bool ATile::TakeCharacter(ANavigationCharacter* NewCharacter)
+bool ATile::PlaceUnit(ANavigableUnit* Unit)
 {
-	if (!CanTakeCharacter())
+	if (!CanPlaceUnit())
 		return false;
 
-	Character = NewCharacter;
+	PlacedUnit = Unit;
 	return true;
 }
 
-// Called when the game starts or when spawned
-void ATile::BeginPlay()
+void ATile::BuildVegetation()
 {
-	Super::BeginPlay();
+	//if (!VegetationType)
+	//	return;
 
-	HexTileMesh->SetCollisionObjectType(ECC_GameTraceChannel1);
+	//if (Structure)
+	//	return;
+
+	//if(const auto World = GetWorld())
+	//{
+	//	const auto Location = CenterSocket->GetComponentLocation();
+	//	const auto Rotation = FRotator(0.0, 60.0 * FMath::RandRange(0, 5), 0.0);
+	//	const auto Vegetation = World->SpawnActor<ATileStructure>(VegetationType, Location, Rotation);
+	//	AppendStructure(Vegetation);
+	//}
+	BuildStructure(VegetationType);
 }
 
-// Called every frame
-void ATile::Tick(float DeltaTime)
+void ATile::BuildMountain()
 {
-	Super::Tick(DeltaTime);
-
+	BuildStructure(MountainType);
 }
 
 void ATile::SetGridPosition(const FCube& Position)
@@ -103,3 +139,27 @@ void ATile::AddNeighbor(ATile* Neighbor)
 	Neighbors.Emplace(Neighbor);
 }
 
+void ATile::AppendStructure(ATileStructure* NewStructure)
+{
+	Structure = NewStructure;
+	Structure->SetActorLocation(CenterSocket->GetComponentLocation());
+	const FAttachmentTransformRules Rules(EAttachmentRule::KeepWorld, false);
+	Structure->AttachToActor(this, Rules);
+}
+
+void ATile::BuildStructure(const TSubclassOf<ATileStructure> StructureType)
+{
+	if (!IsValid(StructureType))
+		return;
+
+	if (Structure)
+		return;
+
+	if (const auto World = GetWorld())
+	{
+		const auto Location = CenterSocket->GetComponentLocation();
+		const auto Rotation = FRotator(0.0, 60.0 * FMath::RandRange(0, 5), 0.0);
+		const auto NewStructure = World->SpawnActor<ATileStructure>(StructureType, Location, Rotation);
+		AppendStructure(NewStructure);
+	}
+}
