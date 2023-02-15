@@ -17,4 +17,6 @@ class PROJECT_HIVE_API ABuildingGameMode : public AGameModeBase
 public:
 	ABuildingGameMode();
 
+	UFUNCTION(BlueprintCallable)
+	void NextRoundTriggered();
 };

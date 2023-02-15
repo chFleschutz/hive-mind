@@ -10,3 +10,8 @@ ABuildingGameMode::ABuildingGameMode()
 {
 	//HUDClass = APlayerBuildHUD::StaticClass();
 }
+
+void ABuildingGameMode::NextRoundTriggered()
+{
+
+}
