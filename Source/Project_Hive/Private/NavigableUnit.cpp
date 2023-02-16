@@ -17,31 +17,6 @@ ANavigableUnit::ANavigableUnit()
 
 }
 
-// Called when the game starts or when spawned
-void ANavigableUnit::BeginPlay()
-{
-	Super::BeginPlay();
-
-	auto Movement = GetCharacterMovement();
-	Movement->MaxWalkSpeed = 300.0f;
-}
-
-void ANavigableUnit::MoveToNextTileOnPath()
-{
-	if (MovementPath.IsEmpty())
-		return;
-
-	const auto NextTile = MovementPath[0];
-	MovementPath.RemoveAt(0);
-	MoveToTile(NextTile);
-}
-
-void ANavigableUnit::OnMoveToTileFinished()
-{
-	IsMoving = false;
-	MoveToNextTileOnPath();
-}
-
 // Called every frame
 void ANavigableUnit::Tick(float DeltaTime)
 {
@@ -92,7 +67,37 @@ void ANavigableUnit::SetMoveTarget(ATile* TargetTile)
 	}
 
 	// Start Moving
+	//MoveToNextTileOnPath();
+}
+
+void ANavigableUnit::StartMoveToTarget()
+{
 	MoveToNextTileOnPath();
+}
+
+void ANavigableUnit::MoveToNextTileOnPath()
+{
+	if (MovementPath.IsEmpty())
+		return;
+
+	const auto NextTile = MovementPath[0];
+	MovementPath.RemoveAt(0);
+	MoveToTile(NextTile);
+}
+
+void ANavigableUnit::OnMoveToTileFinished()
+{
+	IsMoving = false;
+	MoveToNextTileOnPath();
+}
+
+// Called when the game starts or when spawned
+void ANavigableUnit::BeginPlay()
+{
+	Super::BeginPlay();
+
+	auto Movement = GetCharacterMovement();
+	Movement->MaxWalkSpeed = 300.0f;
 }
 
 void ANavigableUnit::MoveToTile(ATile* NextTile)

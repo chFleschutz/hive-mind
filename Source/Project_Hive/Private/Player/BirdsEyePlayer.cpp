@@ -94,7 +94,7 @@ void ABirdsEyePlayer::BeginPlay()
 //		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABirdsEyePlayer::Look);
 //		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABirdsEyePlayer::Move);
 //		Input->BindAction(SelectAction, ETriggerEvent::Triggered, this, &ABirdsEyePlayer::Select);
-//		Input->BindAction(MoveTargetAction, ETriggerEvent::Triggered, this, &ABirdsEyePlayer::MoveToTarget);
+//		Input->BindAction(MoveTargetAction, ETriggerEvent::Triggered, this, &ABirdsEyePlayer::StartMoveToTarget);
 //	}
 //}
 //
@@ -205,7 +205,7 @@ void ABirdsEyePlayer::BeginPlay()
 //}
 //
 //// ReSharper disable once CppMemberFunctionMayBeConst (Input Action)
-//void ABirdsEyePlayer::MoveToTarget(const FInputActionValue& Value)
+//void ABirdsEyePlayer::StartMoveToTarget(const FInputActionValue& Value)
 //{
 //	if (!SelectedTile)
 //		return;

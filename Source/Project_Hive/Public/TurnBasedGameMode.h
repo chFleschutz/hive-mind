@@ -4,19 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "BuildingGameMode.generated.h"
+#include "TurnBasedGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_HIVE_API ABuildingGameMode : public AGameModeBase
+class PROJECT_HIVE_API ATurnBasedGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
 public:
-	ABuildingGameMode();
+	ATurnBasedGameMode();
 
 	UFUNCTION(BlueprintCallable)
-	void NextRoundTriggered();
+	void PlayerFinishedTurn();
+
+private:
+	void ExecutePlayerTurns();
+
+	int32 NumPlayerReady = 0;
 };
