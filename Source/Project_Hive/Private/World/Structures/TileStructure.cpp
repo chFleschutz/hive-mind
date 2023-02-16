@@ -21,6 +21,7 @@ void ATileStructure::BeginPlay()
 	Super::BeginPlay();
 
 	TileStructureMesh->SetCollisionObjectType(ECC_GameTraceChannel2);
+	State = EStructureState::Planning;
 }
 
 // Called every frame

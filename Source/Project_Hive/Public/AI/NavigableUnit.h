@@ -8,7 +8,6 @@
 #include "GameFramework/Character.h"
 #include "NavigableUnit.generated.h"
 
-class ATile;
 
 UCLASS()
 class PROJECT_HIVE_API ANavigableUnit : public ACharacter
@@ -25,6 +24,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+	virtual void OnPlanningPhaseStarted();
+	virtual void OnExecutionPhaseStarted();
+
 	void SetStandingTile(ATile* Tile);
 
 	virtual bool CanMoveTo(ATile* Tile);
@@ -40,6 +42,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
 		int32 MovementRange = 3;

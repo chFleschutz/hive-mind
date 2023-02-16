@@ -20,7 +20,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayerFinishedTurn();
 
+	DECLARE_EVENT(ATurnBasedGameMode, FPlanningPhaseEvent)
+	FPlanningPhaseEvent& OnPlanningPhaseStarted() { return PlanningPhaseEvent; }
+
+	DECLARE_EVENT(ATurnBasedGameMode, FExecutionPhaseEvent)
+	FExecutionPhaseEvent& OnExecutionPhaseStarted() { return ExecutionPhaseEvent; }
+
 private:
+	FPlanningPhaseEvent PlanningPhaseEvent;
+	FExecutionPhaseEvent ExecutionPhaseEvent;
+
 	void ExecutePlayerTurns();
 
 	int32 NumPlayerReady = 0;

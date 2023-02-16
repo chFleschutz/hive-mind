@@ -5,7 +5,10 @@
 #include "World/Tiles/Tile.h"
 #include "AI/AStarNavigation.h"
 #include "AI/UnitAIController.h"
+#include "TurnBasedGameMode.h"
+
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ANavigableUnit::ANavigableUnit()
@@ -29,6 +32,15 @@ void ANavigableUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ANavigableUnit::OnPlanningPhaseStarted()
+{
+}
+
+void ANavigableUnit::OnExecutionPhaseStarted()
+{
+	StartMoveToTarget();
 }
 
 void ANavigableUnit::SetStandingTile(ATile* Tile)
@@ -98,6 +110,23 @@ void ANavigableUnit::BeginPlay()
 
 	auto Movement = GetCharacterMovement();
 	Movement->MaxWalkSpeed = 300.0f;
+
+	const auto World = GetWorld();
+	if (!World)
+		return;
+	// Connect to game-mode events
+	if (const auto GameMode = Cast<ATurnBasedGameMode>(UGameplayStatics::GetGameMode(World)))
+	{
+		GameMode->OnPlanningPhaseStarted().AddUObject(this, &ANavigableUnit::OnPlanningPhaseStarted);
+		GameMode->OnExecutionPhaseStarted().AddUObject(this, &ANavigableUnit::OnExecutionPhaseStarted);
+	}
+
+}
+
+void ANavigableUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
 }
 
 void ANavigableUnit::MoveToTile(ATile* NextTile)
