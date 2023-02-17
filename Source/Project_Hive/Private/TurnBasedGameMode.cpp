@@ -14,11 +14,36 @@ void ATurnBasedGameMode::PlayerFinishedTurn()
 	if (NumPlayerReady < GetNumPlayers())
 		return;
 
-	ExecutePlayerTurns();
+	StartExecutionPhase();
 }
 
-void ATurnBasedGameMode::ExecutePlayerTurns()
+void ATurnBasedGameMode::ExecutionStarted()
 {
+	NumExecuting++;
+}
+
+void ATurnBasedGameMode::ExecutionFinished()
+{
+	NumExecuting--;
+	if (NumExecuting != 0)
+		return;
+
+	StartPlanningPhase();
+}
+
+void ATurnBasedGameMode::StartPlanningPhase()
+{
+	GamePhase = EGamePhase::GP_Planning;
 	NumPlayerReady = 0;
+	PlanningPhaseEvent.Broadcast();
+}
+
+void ATurnBasedGameMode::StartExecutionPhase()
+{
+	GamePhase = EGamePhase::GP_Executing;
+	NumExecuting = 0;
+
+	ExecutionStarted();
 	ExecutionPhaseEvent.Broadcast();
+	ExecutionFinished();
 }

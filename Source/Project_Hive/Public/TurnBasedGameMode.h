@@ -6,6 +6,16 @@
 #include "GameFramework/GameModeBase.h"
 #include "TurnBasedGameMode.generated.h"
 
+/** Phases */
+UENUM(BlueprintType)
+enum class EGamePhase : uint8
+{
+	GP_Planning		UMETA(DisplayName = "Planning Phase"),
+	GP_Executing	UMETA(DisplayName = "Executing Phase"),
+
+	GP_Max			UMETA(Hidden),
+};
+
 /**
  * 
  */
@@ -20,17 +30,38 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayerFinishedTurn();
 
+	/**
+	 * Signals to wait with switching to planning phase (Use when doing animations, moving, etc)
+	 * Meant to be called inside the ExecutionPhaseEvent
+	 * Make sure ExecutionFinished is called afterwards
+	 */
+	void ExecutionStarted();
+	/**
+	 * Signals that the object finished executing and the phase can continue
+	 * Make sure ExecutionStarted was called first
+	 * The phase will continue when all objects finished execution
+	 */
+	void ExecutionFinished();
+
 	DECLARE_EVENT(ATurnBasedGameMode, FPlanningPhaseEvent)
 	FPlanningPhaseEvent& OnPlanningPhaseStarted() { return PlanningPhaseEvent; }
 
 	DECLARE_EVENT(ATurnBasedGameMode, FExecutionPhaseEvent)
 	FExecutionPhaseEvent& OnExecutionPhaseStarted() { return ExecutionPhaseEvent; }
 
+	EGamePhase GetGamePhase() const { return GamePhase; }
+
+protected:
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Game")
+		EGamePhase GamePhase = EGamePhase::GP_Planning;
+
 private:
 	FPlanningPhaseEvent PlanningPhaseEvent;
 	FExecutionPhaseEvent ExecutionPhaseEvent;
 
-	void ExecutePlayerTurns();
+	void StartPlanningPhase();
+	void StartExecutionPhase();
 
 	int32 NumPlayerReady = 0;
+	int32 NumExecuting = 0;
 };

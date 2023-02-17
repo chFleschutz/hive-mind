@@ -40,6 +40,13 @@ void ANavigableUnit::OnPlanningPhaseStarted()
 
 void ANavigableUnit::OnExecutionPhaseStarted()
 {
+	if (const auto World = GetWorld())
+	{
+		if (const auto GameMode = Cast<ATurnBasedGameMode>(UGameplayStatics::GetGameMode(World)))
+		{
+			GameMode->ExecutionStarted();
+		}
+	}
 	StartMoveToTarget();
 }
 
@@ -77,9 +84,6 @@ void ANavigableUnit::SetMoveTarget(ATile* TargetTile)
 
 		LastTile = Tile;
 	}
-
-	// Start Moving
-	//MoveToNextTileOnPath();
 }
 
 void ANavigableUnit::StartMoveToTarget()
@@ -100,7 +104,19 @@ void ANavigableUnit::MoveToNextTileOnPath()
 void ANavigableUnit::OnMoveToTileFinished()
 {
 	IsMoving = false;
-	MoveToNextTileOnPath();
+	if (!MovementPath.IsEmpty())
+	{
+		MoveToNextTileOnPath();
+		return;
+	}
+	// Signal finished
+	if (const auto World = GetWorld())
+	{
+		if (const auto GameMode = Cast<ATurnBasedGameMode>(UGameplayStatics::GetGameMode(World)))
+		{
+			GameMode->ExecutionFinished();
+		}
+	}
 }
 
 // Called when the game starts or when spawned
