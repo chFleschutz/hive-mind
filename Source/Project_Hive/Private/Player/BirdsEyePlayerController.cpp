@@ -9,11 +9,16 @@
 #include "EnhancedInputSubsystems.h"
 #include "AI/NavigableUnit.h"
 #include "Player/BirdsEyePlayer.h"
+#include "Player/BuildComponent.h"
 
 #include "World/Tiles/Tile.h"
 #include "World/Structures/TileStructure.h"
 
 
+ABirdsEyePlayerController::ABirdsEyePlayerController()
+{
+	BuildComponent = static_cast<UBuildComponent*>(AddComponentByClass(BuildComponentClass, false, FTransform(), false));
+}
 // Called when the game starts or when spawned
 void ABirdsEyePlayerController::BeginPlay()
 {
@@ -22,7 +27,8 @@ void ABirdsEyePlayerController::BeginPlay()
 	// Set Input Mapping
 	if (const auto Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
-		Subsystem->AddMappingContext(InputMapping, 0);
+		Subsystem->AddMappingContext(DefaultMapping, 0);
+		Subsystem->AddMappingContext(SelectMapping, 1);
 	}
 
 	SetControlRotation(FRotator(300.0, 0.0, 0.0));
@@ -67,19 +73,21 @@ bool ABirdsEyePlayerController::HasTileSelected() const
 	return static_cast<bool>(SelectedTile);
 }
 
-void ABirdsEyePlayerController::StartBuildingStructure(const TSubclassOf<ATileStructure> Structure)
+void ABirdsEyePlayerController::ToggleBuildMode(const bool IsActive) const
 {
-	// show preview
-	if (!IsValid(Structure))
-		return;
-
-	const auto World = GetWorld();
-	if (!IsValid(World))
-		return;
-
-	const auto Location = FVector::Zero();
-	const auto Rotation = FRotator(0.0, 60.0 * FMath::RandRange(0, 5), 0.0);
-	PreviewStructure = World->SpawnActor<ATileStructure>(Structure, Location, Rotation);
+	if (const auto Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	{
+		if (IsActive)
+		{
+			Subsystem->RemoveMappingContext(SelectMapping);
+			Subsystem->AddMappingContext(BuildModeMapping, 1);
+		}
+		else
+		{
+			Subsystem->RemoveMappingContext(BuildModeMapping);
+			Subsystem->AddMappingContext(SelectMapping, 1);
+		}
+	}
 }
 
 bool ABirdsEyePlayerController::CanSpawnCharacter() const
@@ -102,6 +110,23 @@ void ABirdsEyePlayerController::SpawnUnit(const TSubclassOf<ANavigableUnit> Unit
 		const auto NewCharacter = World->SpawnActor<ANavigableUnit>(Unit, Location, Rotation);
 		NewCharacter->SetStandingTile(SelectedTile);
 	}
+}
+
+ATile* ABirdsEyePlayerController::QueryTileUnderCursor() const
+{
+	FHitResult Hit;
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
+	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1));
+	GetHitResultUnderCursorForObjects(ObjectTypesArray, false, Hit);
+
+	if (!Hit.IsValidBlockingHit())
+		return nullptr;
+
+	const auto HitActor = Hit.GetActor();
+	if (!IsValid(HitActor))
+		return nullptr;
+
+	return Cast<ATile>(HitActor);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst because input-action-callback cannot be const
@@ -139,21 +164,6 @@ void ABirdsEyePlayerController::Move(const FInputActionValue& Value)
 
 void ABirdsEyePlayerController::Select(const FInputActionValue& Value)
 {
-	// Finally build preview tile
-	if (PreviewStructure)
-	{
-		const auto Tile = QueryTileUnderCursor();
-		if (!Tile)
-			return;
-
-		if (!Tile->CanBuild(PreviewStructure))
-			return;
-
-		Tile->Build(PreviewStructure);
-		PreviewStructure = nullptr;
-		return;
-	}
-
 	// Deselect last selection
 	if (SelectedTile)
 	{
@@ -180,25 +190,4 @@ void ABirdsEyePlayerController::MoveToTarget(const FInputActionValue& Value)
 	{
 		SelectedCharacter->SetMoveTarget(TargetTile);
 	}
-}
-
-ATile* ABirdsEyePlayerController::QueryTileUnderCursor() const
-{
-	const auto PlayerController = GetWorld()->GetFirstPlayerController();
-	if (!PlayerController)
-		return nullptr;
-
-	FHitResult Hit;
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
-	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1));
-	PlayerController->GetHitResultUnderCursorForObjects(ObjectTypesArray, false, Hit);
-
-	if (!Hit.IsValidBlockingHit())
-		return nullptr;
-
-	const auto HitActor = Hit.GetActor();
-	if (!IsValid(HitActor))
-		return nullptr;
-
-	return Cast<ATile>(HitActor);
 }

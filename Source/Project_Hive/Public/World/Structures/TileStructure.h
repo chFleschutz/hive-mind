@@ -5,10 +5,11 @@
 #include "World/Tiles/Tile.h"
 
 #include "CoreMinimal.h"
+#include "Engine/DataTable.h"
 #include "GameFramework/Actor.h"
 #include "TileStructure.generated.h"
 
-/** Foundation types of tiles */
+/** Current state of the structure */
 UENUM(BlueprintType)
 enum class EStructureState : uint8
 {
@@ -17,7 +18,23 @@ enum class EStructureState : uint8
 	Ready,
 	Demolish,
 
-	FT_Max		UMETA(Hidden),
+	Max		UMETA(Hidden),
+};
+
+
+USTRUCT(BlueprintType)
+struct FStructureData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		TSubclassOf<ATileStructure> StructureClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		UStaticMesh* Mesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		TArray<EFoundationType> SupportedFoundationTypes;
 };
 
 

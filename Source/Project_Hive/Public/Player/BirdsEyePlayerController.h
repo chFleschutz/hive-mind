@@ -8,6 +8,7 @@
 
 class ATile;
 class ATileStructure;
+class UBuildComponent;
 class UInputAction;
 class UInputComponent;
 class UInputMappingContext;
@@ -22,12 +23,16 @@ class PROJECT_HIVE_API ABirdsEyePlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	
+	ABirdsEyePlayerController();
+
 	UFUNCTION(BlueprintCallable)
 		bool HasTileSelected() const;
 
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+		void BuildStructure(int32 StructureID);
+
 	UFUNCTION(BlueprintCallable)
-		void StartBuildingStructure(TSubclassOf<ATileStructure> Structure);
+		void ToggleBuildMode(bool IsActive) const;
 
 	UFUNCTION(BlueprintCallable)
 		bool CanSpawnCharacter() const;
@@ -35,12 +40,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SpawnUnit(TSubclassOf<class ANavigableUnit> Unit) const;
 
+	ATile* QueryTileUnderCursor() const;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupInputComponent() override;
-
-	ATile* QueryTileUnderCursor() const;
 
 	// Input action callbacks:
 	//
@@ -50,31 +55,44 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void MoveToTarget(const FInputActionValue& Value);
 
+	// Components
+	//
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+		TSubclassOf<UBuildComponent> BuildComponentClass;
+
 	// Input
 	//
-	/** Mapping Context */
+	/** Default Mapping Context */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-	// ReSharper disable once UnrealHeaderToolError
-	UInputMappingContext* InputMapping;
+		UInputMappingContext* DefaultMapping;
+	/** Select Mapping Context */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+		UInputMappingContext* SelectMapping;
+	/** Build mode Mapping Context */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+		UInputMappingContext* BuildModeMapping;
 
 	/** Zoom Input Action*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
 		UInputAction* ZoomAction;
-
 	/** Look Input Action*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
 		UInputAction* LookAction;
-
 	/** Move Input Action*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
 		UInputAction* MoveAction;
-
 	/** Select Input Action*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
 		UInputAction* SelectAction;
-
+	/** Move to Target-location Action*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
 		UInputAction* MoveTargetAction;
+	/** Apply Building Structure Action */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
+		UInputAction* BuildApplyAction;
+	/** Abort Building Structure Action */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
+		UInputAction* BuildAbortAction;
 
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Grid")
@@ -82,4 +100,9 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Grid")
 		ATileStructure* PreviewStructure;
+
+private:
+	UPROPERTY(VisibleInstanceOnly)
+	class UBuildComponent* BuildComponent;
+
 };

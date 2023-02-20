@@ -55,6 +55,9 @@ public:
 	bool CanDestroyBuilding() const;
 	void DestroyBuilding();
 
+	// Returns the Structure on the Tile (May returns nullptr);
+	ATileStructure* GetStructure() const { return Structure; }
+
 	virtual bool CanPlaceUnit();
 	bool PlaceUnit(ANavigableUnit* Unit);
 	ANavigableUnit* GetUnit() const { return PlacedUnit; }
