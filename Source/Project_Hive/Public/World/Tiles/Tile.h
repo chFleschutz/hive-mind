@@ -45,7 +45,7 @@ public:
 	TArray<ATile*> GetNeighbors() { return Neighbors; }
 
 	// Renders a highlight outline 
-	void SetSelected(bool IsSelected);
+	void SetSelected(bool IsSelected, bool ShowRangeOfUnit = true);
 	void SetNeighborsSelected(bool IsSelected, int32 Depth);
 	bool GetIsSelected() const { return IsTileSelected; }
 
@@ -61,7 +61,7 @@ public:
 	virtual bool CanPlaceUnit();
 	bool PlaceUnit(ANavigableUnit* Unit);
 	ANavigableUnit* GetUnit() const { return PlacedUnit; }
-	void RemoveUnit() { PlacedUnit = nullptr; }
+	void RemoveUnit();
 
 	FVector GetCenterSocketLocation() const { return CenterSocket->GetComponentLocation(); }
 
@@ -104,7 +104,11 @@ private:
 	void AppendStructure(ATileStructure* NewStructure);
 	void BuildStructure(TSubclassOf<ATileStructure> StructureType);
 
+	void QueryTilesInMovementRange();
+	void DisplayMovementRange(bool IsVisible);
+
 	bool IsTileSelected = false;
 	FCube GridPosition;
 	TArray<ATile*> Neighbors;
+	TArray<ATile*> TilesInMovementRange;
 };

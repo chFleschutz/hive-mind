@@ -36,13 +36,15 @@ void ATile::Tick(float DeltaTime)
 
 }
 
-void ATile::SetSelected(const bool IsSelected)
+void ATile::SetSelected(const bool IsSelected, const bool ShowRangeOfUnit)
 {
+	IsTileSelected = IsSelected;
+
 	if (HexTileMesh)
-	{
-		IsTileSelected = IsSelected;
 		HexTileMesh->SetRenderCustomDepth(IsSelected);
-	}
+
+	if (ShowRangeOfUnit && PlacedUnit)
+		DisplayMovementRange(IsSelected);
 }
 
 void ATile::SetNeighborsSelected(const bool IsSelected, const int32 Depth) 
@@ -103,24 +105,20 @@ bool ATile::PlaceUnit(ANavigableUnit* Unit)
 		return false;
 
 	PlacedUnit = Unit;
+	QueryTilesInMovementRange();
+	DisplayMovementRange(true);
 	return true;
+}
+
+void ATile::RemoveUnit()
+{
+	PlacedUnit = nullptr; 
+	DisplayMovementRange(false);
+	TilesInMovementRange.Empty();
 }
 
 void ATile::BuildVegetation()
 {
-	//if (!VegetationType)
-	//	return;
-
-	//if (Structure)
-	//	return;
-
-	//if(const auto World = GetWorld())
-	//{
-	//	const auto Location = CenterSocket->GetComponentLocation();
-	//	const auto Rotation = FRotator(0.0, 60.0 * FMath::RandRange(0, 5), 0.0);
-	//	const auto Vegetation = World->SpawnActor<ATileStructure>(VegetationType, Location, Rotation);
-	//	AppendStructure(Vegetation);
-	//}
 	BuildStructure(VegetationType);
 }
 
@@ -161,5 +159,53 @@ void ATile::BuildStructure(const TSubclassOf<ATileStructure> StructureType)
 		const auto Rotation = FRotator(0.0, 60.0 * FMath::RandRange(0, 5), 0.0);
 		const auto NewStructure = World->SpawnActor<ATileStructure>(StructureType, Location, Rotation);
 		AppendStructure(NewStructure);
+	}
+}
+
+void ATile::QueryTilesInMovementRange()
+{
+	if (!PlacedUnit)
+		return;
+
+	TArray<ATile*> Frontier;
+	Frontier.Add(this);
+	TilesInMovementRange.Add(this);
+
+	const auto MovementRange = PlacedUnit->GetMovementRange();
+	int32 CurrentLevel = 0;
+	int32 RemainingTilesInLevel = 1;
+
+	while (!Frontier.IsEmpty())
+	{
+		const auto CurrentTile = Frontier[0];
+		Frontier.RemoveAt(0);
+		RemainingTilesInLevel--;
+
+		for (const auto NextTile : CurrentTile->GetNeighbors())
+		{
+			if (!PlacedUnit->CanMoveTo(NextTile)) //< Skip impossible tiles
+				continue;
+			if (TilesInMovementRange.Contains(NextTile))	//< Skip already visited tiles
+				continue;
+
+			Frontier.Add(NextTile);
+			TilesInMovementRange.Add(NextTile);
+		}
+
+		if (RemainingTilesInLevel == 0)
+		{
+			RemainingTilesInLevel = Frontier.Num();
+			CurrentLevel++;
+			if (CurrentLevel == MovementRange)
+				break;
+		}
+	}
+}
+
+void ATile::DisplayMovementRange(const bool IsVisible)
+{
+	for (const auto Tile: TilesInMovementRange)
+	{
+		Tile->SetSelected(IsVisible, false);
 	}
 }

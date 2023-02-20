@@ -105,10 +105,13 @@ void ABirdsEyePlayerController::SpawnUnit(const TSubclassOf<ANavigableUnit> Unit
 
 	if (const auto World = GetWorld())
 	{
-		const auto Location = SelectedTile->GetActorLocation() + FVector(0.0, 0.0, 100.0);
+		const auto Location = SelectedTile->GetCenterSocketLocation();
 		const auto Rotation = FRotator::ZeroRotator;
-		const auto NewCharacter = World->SpawnActor<ANavigableUnit>(Unit, Location, Rotation);
-		NewCharacter->SetStandingTile(SelectedTile);
+		const auto NewUnit = World->SpawnActor<ANavigableUnit>(Unit, Location, Rotation);
+		if (!NewUnit)
+			return;
+
+		NewUnit->SetStandingTile(SelectedTile);
 	}
 }
 

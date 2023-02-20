@@ -6,6 +6,8 @@
 #include "AI/AStarNavigation.h"
 #include "AI/UnitAIController.h"
 #include "TurnBasedGameMode.h"
+#include "Components/CapsuleComponent.h"
+#include "Engine/StaticMeshSocket.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -17,7 +19,6 @@ ANavigableUnit::ANavigableUnit()
 	PrimaryActorTick.bCanEverTick = true;
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
 }
 
 // Called every frame
@@ -124,7 +125,7 @@ void ANavigableUnit::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto Movement = GetCharacterMovement();
+	const auto Movement = GetCharacterMovement();
 	Movement->MaxWalkSpeed = 300.0f;
 
 	const auto World = GetWorld();
