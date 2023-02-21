@@ -106,7 +106,9 @@ bool ATile::PlaceUnit(ANavigableUnit* Unit)
 
 	PlacedUnit = Unit;
 	QueryTilesInMovementRange();
-	DisplayMovementRange(true);
+	if (IsTileSelected)
+		DisplayMovementRange(true);
+
 	return true;
 }
 
@@ -208,4 +210,7 @@ void ATile::DisplayMovementRange(const bool IsVisible)
 	{
 		Tile->SetSelected(IsVisible, false);
 	}
+
+	if (IsTileSelected)
+		SetSelected(true, false);
 }

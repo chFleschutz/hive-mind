@@ -33,21 +33,21 @@ public:
 	/**
 	 * Signals to wait with switching to planning phase (Use when doing animations, moving, etc)
 	 * Meant to be called inside the ExecutionPhaseEvent
-	 * Make sure ExecutionFinished is called afterwards
+	 * Make sure ObjectExecutionFinished is called afterwards
 	 */
-	void ExecutionStarted();
+	void ObjectExecutionStarted();
 	/**
 	 * Signals that the object finished executing and the phase can continue
-	 * Make sure ExecutionStarted was called first
+	 * Make sure ObjectExecutionStarted was called first
 	 * The phase will continue when all objects finished execution
 	 */
-	void ExecutionFinished();
+	void ObjectExecutionFinished();
 
 	DECLARE_EVENT(ATurnBasedGameMode, FPlanningPhaseEvent)
-	FPlanningPhaseEvent& OnPlanningPhaseStarted() { return PlanningPhaseEvent; }
+	FPlanningPhaseEvent& OnPlanningPhaseStartedEvent() { return PlanningPhaseEvent; }
 
 	DECLARE_EVENT(ATurnBasedGameMode, FExecutionPhaseEvent)
-	FExecutionPhaseEvent& OnExecutionPhaseStarted() { return ExecutionPhaseEvent; }
+	FExecutionPhaseEvent& OnExecutionPhaseStartedEvent() { return ExecutionPhaseEvent; }
 
 	EGamePhase GetGamePhase() const { return GamePhase; }
 

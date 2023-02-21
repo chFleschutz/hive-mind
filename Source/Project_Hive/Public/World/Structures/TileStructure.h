@@ -22,6 +22,20 @@ enum class EStructureState : uint8
 };
 
 
+// Todo Move later
+USTRUCT(BlueprintType)
+struct FResource 
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		int32 Gold;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		int32 Wood;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		int32 Food;
+};
+
 USTRUCT(BlueprintType)
 struct FStructureData : public FTableRowBase
 {
@@ -35,6 +49,9 @@ struct FStructureData : public FTableRowBase
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		TArray<EFoundationType> SupportedFoundationTypes;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		FResource ResourceCost;
 };
 
 

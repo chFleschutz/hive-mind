@@ -53,6 +53,5 @@ private:
 	APreviewStructure* PreviewStructure = nullptr;
 
 	FStructureData* PreviewData = nullptr;
-
 	TArray<FStructureData*> BuildableStructures;
 };

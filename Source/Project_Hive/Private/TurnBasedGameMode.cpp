@@ -17,12 +17,12 @@ void ATurnBasedGameMode::PlayerFinishedTurn()
 	StartExecutionPhase();
 }
 
-void ATurnBasedGameMode::ExecutionStarted()
+void ATurnBasedGameMode::ObjectExecutionStarted()
 {
 	NumExecuting++;
 }
 
-void ATurnBasedGameMode::ExecutionFinished()
+void ATurnBasedGameMode::ObjectExecutionFinished()
 {
 	NumExecuting--;
 	if (NumExecuting != 0)
@@ -43,7 +43,7 @@ void ATurnBasedGameMode::StartExecutionPhase()
 	GamePhase = EGamePhase::GP_Executing;
 	NumExecuting = 0;
 
-	ExecutionStarted();
+	ObjectExecutionStarted();
 	ExecutionPhaseEvent.Broadcast();
-	ExecutionFinished();
+	ObjectExecutionFinished();
 }

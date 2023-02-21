@@ -40,6 +40,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SpawnUnit(TSubclassOf<class ANavigableUnit> Unit) const;
 
+	UFUNCTION(BlueprintCallable)
 	ATile* QueryTileUnderCursor() const;
 
 protected:

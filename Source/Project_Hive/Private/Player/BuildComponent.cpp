@@ -20,7 +20,7 @@ UBuildComponent::UBuildComponent()
 }
 
 // Called every frame
-void UBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UBuildComponent::TickComponent(const float DeltaTime, const ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -110,7 +110,7 @@ void UBuildComponent::UpdatePreview() const
 
 bool UBuildComponent::IsBuildLocationValid(const ATile* Tile) const
 {
-	if (!PreviewData || !Tile)
+	if (!Tile)
 		return false;
 
 	const bool HasStructure = Tile->GetStructure() != nullptr;

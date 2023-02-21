@@ -1,0 +1,44 @@
+[
+	{
+		"Name": "Forest",
+		"StructureClass": "/Script/Engine.BlueprintGeneratedClass'/Game/Blueprints/BP_ForestStructure.BP_ForestStructure_C'",
+		"Mesh": "/Script/Engine.StaticMesh'/Game/Assets/Forest/Forest.Forest'",
+		"SupportedFoundationTypes": [
+			"FT_Land"
+		],
+		"ResourceCost":
+		{
+			"Gold": 0,
+			"Wood": 10,
+			"Food": 0
+		}
+	},
+	{
+		"Name": "Desert",
+		"StructureClass": "/Script/Engine.BlueprintGeneratedClass'/Game/Blueprints/BP_Desert.BP_Desert_C'",
+		"Mesh": "/Script/Engine.StaticMesh'/Game/Assets/Desert/DesertVegetation.DesertVegetation'",
+		"SupportedFoundationTypes": [
+			"FT_Land"
+		],
+		"ResourceCost":
+		{
+			"Gold": 0,
+			"Wood": 0,
+			"Food": 10
+		}
+	},
+	{
+		"Name": "Mountain",
+		"StructureClass": "/Script/Engine.BlueprintGeneratedClass'/Game/Blueprints/Structures/BP_MountainStructure.BP_MountainStructure_C'",
+		"Mesh": "/Script/Engine.StaticMesh'/Game/Assets/Mountain/Mountain.Mountain'",
+		"SupportedFoundationTypes": [
+			"FT_Land"
+		],
+		"ResourceCost":
+		{
+			"Gold": 10,
+			"Wood": 0,
+			"Food": 0
+		}
+	}
+]

@@ -50,6 +50,7 @@ public:
 	bool GetIsSelected() const { return IsTileSelected; }
 
 	virtual bool CanBuild(ATileStructure* NewStructure);
+	UFUNCTION(BlueprintCallable)
 	virtual void Build(ATileStructure* NewStructure);
 	
 	bool CanDestroyBuilding() const;
@@ -63,8 +64,10 @@ public:
 	ANavigableUnit* GetUnit() const { return PlacedUnit; }
 	void RemoveUnit();
 
+	UFUNCTION(BlueprintCallable)
 	FVector GetCenterSocketLocation() const { return CenterSocket->GetComponentLocation(); }
 
+	UFUNCTION(BlueprintCallable, BlueprintGetter)
 	EFoundationType GetType() const { return TileFoundationType; }
 
 	void BuildVegetation();

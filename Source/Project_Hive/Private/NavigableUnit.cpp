@@ -41,13 +41,14 @@ void ANavigableUnit::OnPlanningPhaseStarted()
 
 void ANavigableUnit::OnExecutionPhaseStarted()
 {
-	if (const auto World = GetWorld())
+	if (MovementPath.IsEmpty())
+		return;
+	
+	if (const auto GameMode = Cast<ATurnBasedGameMode>(UGameplayStatics::GetGameMode(this)))
 	{
-		if (const auto GameMode = Cast<ATurnBasedGameMode>(UGameplayStatics::GetGameMode(World)))
-		{
-			GameMode->ExecutionStarted();
-		}
+		GameMode->ObjectExecutionStarted();
 	}
+
 	StartMoveToTarget();
 }
 
@@ -115,7 +116,7 @@ void ANavigableUnit::OnMoveToTileFinished()
 	{
 		if (const auto GameMode = Cast<ATurnBasedGameMode>(UGameplayStatics::GetGameMode(World)))
 		{
-			GameMode->ExecutionFinished();
+			GameMode->ObjectExecutionFinished();
 		}
 	}
 }
@@ -134,10 +135,9 @@ void ANavigableUnit::BeginPlay()
 	// Connect to game-mode events
 	if (const auto GameMode = Cast<ATurnBasedGameMode>(UGameplayStatics::GetGameMode(World)))
 	{
-		GameMode->OnPlanningPhaseStarted().AddUObject(this, &ANavigableUnit::OnPlanningPhaseStarted);
-		GameMode->OnExecutionPhaseStarted().AddUObject(this, &ANavigableUnit::OnExecutionPhaseStarted);
+		GameMode->OnPlanningPhaseStartedEvent().AddUObject(this, &ANavigableUnit::OnPlanningPhaseStarted);
+		GameMode->OnExecutionPhaseStartedEvent().AddUObject(this, &ANavigableUnit::OnExecutionPhaseStarted);
 	}
-
 }
 
 void ANavigableUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)

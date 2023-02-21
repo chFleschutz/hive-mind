@@ -16,5 +16,4 @@ class PROJECT_HIVE_API AUnitAIController final : public AAIController
 
 public:
 	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
-
 };
