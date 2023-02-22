@@ -30,23 +30,21 @@ void UBuildComponent::TickComponent(const float DeltaTime, const ELevelTick Tick
 	}
 }
 
-void UBuildComponent::ShowPreview(const int32 StructureTableID)
+void UBuildComponent::ShowPreview(const FStructureData& StructureData)
 {
-	if (!BuildableStructures.IsValidIndex(StructureTableID))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Index out of range (BuildableStructures)"));
-		return;
-	}
-	PreviewData = BuildableStructures[StructureTableID];
-
-	const auto World = GetWorld();
-	if (!World)
-		return;
-
-	PreviewStructure = World->SpawnActor<APreviewStructure>(PreviewStructureClass);
 	if (PreviewStructure)
+		HidePreview();
+
+	PreviewData = StructureData;
+
+	if (const auto World = GetWorld())
 	{
-		PreviewStructure->SetMesh(PreviewData->Mesh);
+		const auto Rotation = FRotator(0.0, 60.0 * FMath::RandRange(0, 5), 0.0);
+		PreviewStructure = World->SpawnActor<APreviewStructure>(PreviewStructureClass, FVector::Zero(), Rotation);
+		if (!PreviewStructure)
+			return;
+
+		PreviewStructure->SetMesh(PreviewData.Mesh);
 		UpdatePreview();
 	}
 }
@@ -55,7 +53,6 @@ void UBuildComponent::HidePreview()
 {
 	PreviewStructure->Destroy();
 	PreviewStructure = nullptr;
-	PreviewData = nullptr;
 }
 
 bool UBuildComponent::BuildStructure()
@@ -74,9 +71,9 @@ bool UBuildComponent::BuildStructure()
 		if (!IsBuildLocationValid(Tile))
 			return false;
 
-		const auto Rotation = FRotator(0.0, 60.0 * FMath::RandRange(0, 5), 0.0);
+		const auto Rotation = PreviewStructure->GetActorRotation();
 		const auto Location = Tile->GetCenterSocketLocation();
-		const auto Structure = World->SpawnActor<ATileStructure>(PreviewData->StructureClass, Location, Rotation);
+		const auto Structure = World->SpawnActor<ATileStructure>(PreviewData.StructureClass, Location, Rotation);
 		Tile->Build(Structure);
 	}
 
@@ -114,6 +111,6 @@ bool UBuildComponent::IsBuildLocationValid(const ATile* Tile) const
 		return false;
 
 	const bool HasStructure = Tile->GetStructure() != nullptr;
-	const bool HasSupportedFoundation = PreviewData->SupportedFoundationTypes.Contains(Tile->GetType());
+	const bool HasSupportedFoundation = PreviewData.SupportedFoundationTypes.Contains(Tile->GetType());
 	return !HasStructure && HasSupportedFoundation;
 }

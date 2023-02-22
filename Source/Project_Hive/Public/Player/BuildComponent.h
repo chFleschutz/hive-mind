@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "World/Structures/TileStructure.h"
 #include "BuildComponent.generated.h"
 
 class APreviewStructure;
 class ATile;
 class UDataTable;
-struct FStructureData;
 
 UCLASS( Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECT_HIVE_API UBuildComponent : public UActorComponent
@@ -24,7 +24,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-	void ShowPreview(int32 StructureTableID);
+	void ShowPreview(const FStructureData& StructureData);
 
 	UFUNCTION(BlueprintCallable)
 	void HidePreview();
@@ -52,6 +52,6 @@ private:
 	UPROPERTY()
 	APreviewStructure* PreviewStructure = nullptr;
 
-	FStructureData* PreviewData = nullptr;
+	FStructureData PreviewData;
 	TArray<FStructureData*> BuildableStructures;
 };

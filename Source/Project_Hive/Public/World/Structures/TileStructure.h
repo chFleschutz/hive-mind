@@ -36,21 +36,34 @@ struct FResource
 		int32 Food;
 };
 
+/** Data struct of a buildable structure */
 USTRUCT(BlueprintType)
 struct FStructureData : public FTableRowBase
 {
 	GENERATED_BODY()
+public:
+	/** Name of the structure */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "Name"))
+		FText Name;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-		TSubclassOf<ATileStructure> StructureClass;
+	/** Icon to use in UI  */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "Icon"))
+		TObjectPtr<UTexture2D> Icon;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-		UStaticMesh* Mesh;
+	/** Class from which actor will be spawned */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "StructureClass"))
+		TObjectPtr<UClass> StructureClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	/** Mesh to show in preview */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "Mesh"))
+		TObjectPtr<UStaticMesh> Mesh;
+
+	/** Valid foundation types to build the structure on */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "SupportedFoundationTypes"))
 		TArray<EFoundationType> SupportedFoundationTypes;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	/** Resource cost of building the structure */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "ResourceCost"))
 		FResource ResourceCost;
 };
 

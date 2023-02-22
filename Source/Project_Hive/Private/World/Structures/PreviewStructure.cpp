@@ -3,7 +3,6 @@
 
 #include "World/Structures/PreviewStructure.h"
 
-#include "IStructureDetailsView.h"
 
 // Sets default values
 APreviewStructure::APreviewStructure()

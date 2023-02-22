@@ -29,7 +29,7 @@ public:
 		bool HasTileSelected() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-		void BuildStructure(int32 StructureID);
+		void BuildStructure(const struct FStructureData& StructureData);
 
 	UFUNCTION(BlueprintCallable)
 		void ToggleBuildMode(bool IsActive) const;
