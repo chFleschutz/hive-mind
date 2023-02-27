@@ -3,14 +3,14 @@
 
 #include "AI/UnitAIController.h"
 
-#include "AI/NavigableUnit.h"
+#include "AI/Unit.h"
 
 
 void AUnitAIController::OnMoveCompleted(const FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
 	Super::OnMoveCompleted(RequestID, Result);
 
-	if (const auto Unit = GetPawn<ANavigableUnit>())
+	if (const auto Unit = GetPawn<AUnit>())
 	{
 		Unit->OnMoveToTileFinished();
 	}

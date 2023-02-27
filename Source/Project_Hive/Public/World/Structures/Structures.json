@@ -1,44 +1,71 @@
 [
 	{
 		"Name": "Forest",
-		"StructureClass": "/Script/Engine.BlueprintGeneratedClass'/Game/Blueprints/BP_ForestStructure.BP_ForestStructure_C'",
+		"Icon": "/Script/Engine.Texture2D'/Game/Assets/Forest/forestThumbnail.forestThumbnail'",
+		"StructureClass": "/Script/Engine.BlueprintGeneratedClass'/Game/Blueprints/Structures/BP_ForestStructure.BP_ForestStructure_C'",
 		"Mesh": "/Script/Engine.StaticMesh'/Game/Assets/Forest/Forest.Forest'",
 		"SupportedFoundationTypes": [
-			"FT_Land"
+			"FT_Grass"
 		],
 		"ResourceCost":
 		{
 			"Gold": 0,
 			"Wood": 10,
 			"Food": 0
-		}
+		},
+		"SpawnableUnitTypes": []
 	},
 	{
 		"Name": "Desert",
-		"StructureClass": "/Script/Engine.BlueprintGeneratedClass'/Game/Blueprints/BP_Desert.BP_Desert_C'",
+		"Icon": "/Script/Engine.Texture2D'/Game/Icons/desert.desert'",
+		"StructureClass": "/Script/Engine.BlueprintGeneratedClass'/Game/Blueprints/Structures/BP_Desert.BP_Desert_C'",
 		"Mesh": "/Script/Engine.StaticMesh'/Game/Assets/Desert/DesertVegetation.DesertVegetation'",
 		"SupportedFoundationTypes": [
-			"FT_Land"
+			"FT_Sand"
 		],
 		"ResourceCost":
 		{
 			"Gold": 0,
 			"Wood": 0,
 			"Food": 10
-		}
+		},
+		"SpawnableUnitTypes": []
 	},
 	{
 		"Name": "Mountain",
+		"Icon": "/Script/Engine.Texture2D'/Game/Icons/mountain.mountain'",
 		"StructureClass": "/Script/Engine.BlueprintGeneratedClass'/Game/Blueprints/Structures/BP_MountainStructure.BP_MountainStructure_C'",
 		"Mesh": "/Script/Engine.StaticMesh'/Game/Assets/Mountain/Mountain.Mountain'",
 		"SupportedFoundationTypes": [
-			"FT_Land"
+			"FT_Grass",
+			"FT_Sand"
 		],
 		"ResourceCost":
 		{
 			"Gold": 10,
 			"Wood": 0,
 			"Food": 0
-		}
+		},
+		"SpawnableUnitTypes": []
+	},
+	{
+		"Name": "Barracks",
+		"Icon": "/Script/Engine.Texture2D'/Game/Icons/unit.unit'",
+		"StructureClass": "/Script/Engine.BlueprintGeneratedClass'/Game/Blueprints/Structures/BP_BarrackStructure.BP_BarrackStructure_C'",
+		"Mesh": "/Script/Engine.StaticMesh'/Game/Meshes/textcube.textcube'",
+		"SupportedFoundationTypes": [
+			"FT_Grass",
+			"FT_Sand"
+		],
+		"ResourceCost":
+		{
+			"Gold": 0,
+			"Wood": 0,
+			"Food": 0
+		},
+		"SpawnableUnitTypes": [
+			"Fighter",
+			"Archer"
+		]
 	}
 ]

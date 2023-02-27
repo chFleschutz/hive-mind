@@ -8,19 +8,9 @@
 #include "GameFramework/Actor.h"
 #include "Tile.generated.h"
 
-class ANavigableUnit;
+class AUnit;
 class ATileStructure;
 class ATileVegetation;
-
-/** Foundation types of tiles */
-UENUM(BlueprintType)
-enum class EFoundationType : uint8
-{
-	FT_Land		UMETA(DisplayName = "Land"),
-	FT_Water	UMETA(DisplayName = "Water"),
-
-	FT_Max		UMETA(Hidden),
-};
 
 UCLASS()
 class PROJECT_HIVE_API ATile : public AActor
@@ -45,9 +35,9 @@ public:
 	TArray<ATile*> GetNeighbors() { return Neighbors; }
 
 	// Renders a highlight outline 
-	void SetSelected(bool IsSelected, bool ShowRangeOfUnit = true);
-	void SetNeighborsSelected(bool IsSelected, int32 Depth);
+	void SetSelected(bool IsSelected);
 	bool GetIsSelected() const { return IsTileSelected; }
+	void ShowHighlight(bool IsHighlighted) const;
 
 	virtual bool CanBuild(ATileStructure* NewStructure);
 	UFUNCTION(BlueprintCallable)
@@ -60,8 +50,8 @@ public:
 	ATileStructure* GetStructure() const { return Structure; }
 
 	virtual bool CanPlaceUnit();
-	bool PlaceUnit(ANavigableUnit* Unit);
-	ANavigableUnit* GetUnit() const { return PlacedUnit; }
+	bool PlaceUnit(AUnit* Unit);
+	AUnit* GetUnit() const { return PlacedUnit; }
 	void RemoveUnit();
 
 	UFUNCTION(BlueprintCallable)
@@ -101,7 +91,7 @@ protected:
 		ATileStructure* Structure = nullptr;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Tile Settings")
-		ANavigableUnit* PlacedUnit = nullptr;
+		AUnit* PlacedUnit = nullptr;
 
 private:
 	void AppendStructure(ATileStructure* NewStructure);

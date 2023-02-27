@@ -9,7 +9,7 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "AI/NavigableUnit.h"
+#include "AI/Unit.h"
 
 #include "World/Tiles/Tile.h"
 #include "World/Structures/TileStructure.h"
@@ -126,7 +126,7 @@ void ABirdsEyePlayer::BeginPlay()
 //	return SelectedTile->CanPlaceUnit();
 //}
 //
-//void ABirdsEyePlayer::SpawnUnit(const TSubclassOf<ANavigableUnit> Unit) const
+//void ABirdsEyePlayer::SpawnUnit(const TSubclassOf<AUnit> Unit) const
 //{
 //	if (!SelectedTile->CanPlaceUnit())
 //		return;
@@ -135,7 +135,7 @@ void ABirdsEyePlayer::BeginPlay()
 //	{
 //		const auto Location = SelectedTile->GetActorLocation() + FVector(0.0, 0.0, 100.0);
 //		const auto Rotation = FRotator::ZeroRotator;
-//		const auto NewCharacter = World->SpawnActor<ANavigableUnit>(Unit, Location, Rotation);
+//		const auto NewCharacter = World->SpawnActor<AUnit>(Unit, Location, Rotation);
 //		NewCharacter->SetStandingTile(SelectedTile);
 //	}
 //}

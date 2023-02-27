@@ -7,7 +7,7 @@
 #include "AStarNavigation.generated.h"
 
 class ATile;
-class ANavigableUnit;
+class AUnit;
 
 /**
  * 
@@ -27,7 +27,7 @@ public:
 	 *	@note The returned Array is empty if no path between StartTile and GoalTile could be found
 	 *	@note The returned Array is ordered with the last tile being the GoalTile
 	 */
-	static TArray<ATile*> GetPath(ATile* StartTile, ATile* GoalTile, ANavigableUnit* Unit);
+	static TArray<ATile*> GetPath(ATile* StartTile, ATile* GoalTile, AUnit* Unit);
 
 private:
 	// Returns a value depending on how far CurrentTile is away from GoalTile

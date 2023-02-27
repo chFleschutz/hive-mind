@@ -3,11 +3,11 @@
 #include "AI/AStarNavigation.h"
 
 #include "World/Tiles/Tile.h"
-#include "AI/NavigableUnit.h"
+#include "AI/Unit.h"
 #include "Utility/PriorityQueue.h"
 
 
-TArray<ATile*> UAStarNavigation::GetPath(ATile* StartTile, ATile* GoalTile, ANavigableUnit* Unit)
+TArray<ATile*> UAStarNavigation::GetPath(ATile* StartTile, ATile* GoalTile, AUnit* Unit)
 {
 	TPriorityQueue<ATile*> Frontier;
 	Frontier.Push(StartTile, 0.0f);

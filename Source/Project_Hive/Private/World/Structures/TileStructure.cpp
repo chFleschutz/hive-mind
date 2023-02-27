@@ -20,7 +20,8 @@ void ATileStructure::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TileStructureMesh->SetCollisionObjectType(ECC_GameTraceChannel2);
+	//TileStructureMesh->SetCollisionObjectType(ECC_GameTraceChannel2);
+	TileStructureMesh->SetCollisionProfileName(TEXT("StructurePreset"));
 	State = EStructureState::Planning;
 }
 
@@ -31,7 +32,16 @@ void ATileStructure::Tick(float DeltaTime)
 
 }
 
+void ATileStructure::SetStructureData(const FStructureData Data)
+{
+	StructureData = Data;
+}
+
+void ATileStructure::DisplayInfo(bool IsVisible)
+{
+}
+
 bool ATileStructure::CheckFoundationSupport(const EFoundationType Foundation) const
 {
-	return SupportedFoundationTypes.Contains(Foundation);
+	return StructureData.SupportedFoundationTypes.Contains(Foundation);
 }

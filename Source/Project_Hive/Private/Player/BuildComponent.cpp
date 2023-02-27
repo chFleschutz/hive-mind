@@ -74,6 +74,7 @@ bool UBuildComponent::BuildStructure()
 		const auto Rotation = PreviewStructure->GetActorRotation();
 		const auto Location = Tile->GetCenterSocketLocation();
 		const auto Structure = World->SpawnActor<ATileStructure>(PreviewData.StructureClass, Location, Rotation);
+		Structure->SetStructureData(PreviewData);
 		Tile->Build(Structure);
 	}
 

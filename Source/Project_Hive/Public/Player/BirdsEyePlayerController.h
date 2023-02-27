@@ -38,10 +38,13 @@ public:
 		bool CanSpawnCharacter() const;
 
 	UFUNCTION(BlueprintCallable)
-		void SpawnUnit(TSubclassOf<class ANavigableUnit> Unit) const;
+		void SpawnUnit(TSubclassOf<class AUnit> Unit) const;
 
 	UFUNCTION(BlueprintCallable)
-	ATile* QueryTileUnderCursor() const;
+		ATile* QueryTileUnderCursor() const;
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void TileSelectionChanged(ATile* Tile);
 
 protected:
 	virtual void BeginPlay() override;
@@ -95,6 +98,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Actions")
 		UInputAction* BuildAbortAction;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Defaults")
+		TEnumAsByte<ETraceTypeQuery> SelectTraceType;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Grid")
 		ATile* SelectedTile = nullptr;

@@ -105,16 +105,6 @@ ATile* AHexGrid::SpawnTile(const FCube& GridPosition, const TSubclassOf<ATile> T
 
 TSubclassOf<ATile> AHexGrid::GetTileFor(const FCube& GridPos, float Value) const
 {
-	//Value = Value + 1.0f;
-	//if (Value < SandValue)
-	//	return SandTile;
-
-	//Value = Value - SandValue;
-	//if (Value < WaterValue)
-	//	return WaterTile;
-
-	//return GrassTile;
-	
 	const auto SumValues = SandValue + WaterValue + GrassValue;
 	if (Value < (SandValue / SumValues))
 	{
@@ -132,38 +122,6 @@ TSubclassOf<ATile> AHexGrid::GetTileFor(const FCube& GridPos, float Value) const
 
 void AHexGrid::SpawnTileAt(const FCube& GridPos, const float Value)
 {
-	//const auto SumValues = SandValue + WaterValue + GrassValue;
-	//if (Value < SandValue / SumValues)
-	//{	// Sand Tile
-	//	const auto Tile = SpawnTile(GridPos, SandTile);
-	//	// Vegetation and Mountain in middle of patch
-	//	//if (Value < MountainAmount)
-	//	//{
-	//	//	Tile->BuildMountain();
-	//	//}
-	//	if (Value > ForestAmount && Value < (SandValue / SumValues) - ForestAmount)
-	//	{
-	//		Tile->BuildVegetation();
-	//	}
-	//}
-	//else if (Value < (SandValue + WaterValue) / SumValues)
-	//{	// Water Tile
-	//	const auto Tile = SpawnTile(GridPos, WaterTile);
-	//}
-	//else
-	//{	// Grass Tile
-	//	const auto Tile = SpawnTile(GridPos, GrassTile);
-	//	// Vegetation and Mountain in middle of patch
-	//	if (Value > SumValues - MountainAmount)
-	//	{
-	//		Tile->BuildMountain();
-	//	}
-	//	else if (Value > (SandValue + WaterValue) / SumValues + ForestAmount && Value < SumValues - ForestAmount)
-	//	{
-	//		Tile->BuildVegetation();
-	//	}
-	//}
-
 	const auto SumValues = SandValue + WaterValue + GrassValue;
 	if (Value < SandValue / SumValues)
 	{	// Sand Tile

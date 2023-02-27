@@ -6,17 +6,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "NavigableUnit.generated.h"
+#include "Unit.generated.h"
 
 
 UCLASS()
-class PROJECT_HIVE_API ANavigableUnit : public ACharacter
+class PROJECT_HIVE_API AUnit : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	ANavigableUnit();
+	AUnit();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -48,7 +48,10 @@ protected:
 		int32 MovementRange = 3;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
-		EFoundationType UnitType;
+		TArray<EFoundationType> UnitMoveTypes;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Defaults")
+		UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Movement")
 		TArray<ATile*> MovementPath;

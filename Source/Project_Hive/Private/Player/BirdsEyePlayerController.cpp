@@ -3,11 +3,10 @@
 
 #include "Player/BirdsEyePlayerController.h"
 
-#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "AI/NavigableUnit.h"
+#include "AI/Unit.h"
 #include "Player/BirdsEyePlayer.h"
 #include "Player/BuildComponent.h"
 
@@ -32,8 +31,8 @@ void ABirdsEyePlayerController::BeginPlay()
 	}
 
 	SetControlRotation(FRotator(300.0, 0.0, 0.0));
+	SetInputMode(FInputModeGameAndUI());
 	bShowMouseCursor = true;
-	DefaultMouseCursor = EMouseCursor::Default;
 }
 
 // Called every frame
@@ -98,7 +97,7 @@ bool ABirdsEyePlayerController::CanSpawnCharacter() const
 	return SelectedTile->CanPlaceUnit();
 }
 
-void ABirdsEyePlayerController::SpawnUnit(const TSubclassOf<ANavigableUnit> Unit) const
+void ABirdsEyePlayerController::SpawnUnit(const TSubclassOf<AUnit> Unit) const
 {
 	if (!SelectedTile->CanPlaceUnit())
 		return;
@@ -107,7 +106,7 @@ void ABirdsEyePlayerController::SpawnUnit(const TSubclassOf<ANavigableUnit> Unit
 	{
 		const auto Location = SelectedTile->GetCenterSocketLocation();
 		const auto Rotation = FRotator::ZeroRotator;
-		const auto NewUnit = World->SpawnActor<ANavigableUnit>(Unit, Location, Rotation);
+		const auto NewUnit = World->SpawnActor<AUnit>(Unit, Location, Rotation);
 		if (!NewUnit)
 			return;
 
@@ -118,9 +117,7 @@ void ABirdsEyePlayerController::SpawnUnit(const TSubclassOf<ANavigableUnit> Unit
 ATile* ABirdsEyePlayerController::QueryTileUnderCursor() const
 {
 	FHitResult Hit;
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
-	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1));
-	GetHitResultUnderCursorForObjects(ObjectTypesArray, false, Hit);
+	GetHitResultUnderCursorByChannel(SelectTraceType, false, Hit);
 
 	if (!Hit.IsValidBlockingHit())
 		return nullptr;
@@ -174,11 +171,13 @@ void ABirdsEyePlayerController::Select(const FInputActionValue& Value)
 		SelectedTile = nullptr;
 	}
 	// Select new tile
-	if (const auto Tile = QueryTileUnderCursor())
+	const auto Tile = QueryTileUnderCursor();
+	if (Tile)
 	{
 		Tile->SetSelected(true);
 		SelectedTile = Tile;
 	}
+	TileSelectionChanged(Tile);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst (Input Action)

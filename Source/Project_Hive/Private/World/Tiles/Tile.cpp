@@ -2,7 +2,7 @@
 
 #include "World/Tiles/Tile.h"
 
-#include "AI/NavigableUnit.h"
+#include "AI/Unit.h"
 #include "World/Structures/TileStructure.h"
 #include "World/Structures/TileVegetation.h"
 
@@ -21,14 +21,6 @@ ATile::ATile()
 	CenterSocket->SetupAttachment((HexTileMesh));
 }
 
-// Called when the game starts or when spawned
-void ATile::BeginPlay()
-{
-	Super::BeginPlay();
-
-	HexTileMesh->SetCollisionObjectType(ECC_GameTraceChannel1);
-}
-
 // Called every frame
 void ATile::Tick(float DeltaTime)
 {
@@ -36,35 +28,35 @@ void ATile::Tick(float DeltaTime)
 
 }
 
-void ATile::SetSelected(const bool IsSelected, const bool ShowRangeOfUnit)
+void ATile::SetSelected(const bool IsSelected)
 {
 	IsTileSelected = IsSelected;
 
-	if (HexTileMesh)
-		HexTileMesh->SetRenderCustomDepth(IsSelected);
+	ShowHighlight(IsSelected);
 
-	if (ShowRangeOfUnit && PlacedUnit)
-		DisplayMovementRange(IsSelected);
-}
-
-void ATile::SetNeighborsSelected(const bool IsSelected, const int32 Depth) 
-{
-	if (Depth <= 0)
-		return;
-
-	for (const auto Neighbor : Neighbors)
+	if (PlacedUnit)
 	{
-		if (Neighbor->GetIsSelected() == IsSelected)
-			continue;
+		// Show Unit Info 
 
-		Neighbor->SetSelected(IsSelected);
-		Neighbor->SetNeighborsSelected(IsSelected, Depth - 1);
+		DisplayMovementRange(IsSelected);
+	}
+
+	if (Structure)
+	{
+		// Show Structure Info
+
 	}
 }
 
 bool ATile::CanDestroyBuilding() const
 {
 	return static_cast<bool>(Structure);
+}
+
+void ATile::ShowHighlight(const bool IsHighlighted) const
+{
+	if (HexTileMesh)
+		HexTileMesh->SetRenderCustomDepth(IsHighlighted);
 }
 
 bool ATile::CanBuild(ATileStructure* NewStructure)
@@ -79,9 +71,6 @@ bool ATile::CanBuild(ATileStructure* NewStructure)
 
 void ATile::Build(ATileStructure* NewStructure)
 {
-	if (!CanBuild(NewStructure))
-		return;
-
 	AppendStructure(NewStructure);
 }
 
@@ -99,7 +88,7 @@ bool ATile::CanPlaceUnit()
 	return !PlacedUnit;
 }
 
-bool ATile::PlaceUnit(ANavigableUnit* Unit)
+bool ATile::PlaceUnit(AUnit* Unit)
 {
 	if (!CanPlaceUnit())
 		return false;
@@ -127,6 +116,15 @@ void ATile::BuildVegetation()
 void ATile::BuildMountain()
 {
 	BuildStructure(MountainType);
+}
+
+// Called when the game starts or when spawned
+void ATile::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//HexTileMesh->SetCollisionObjectType(ECC_GameTraceChannel1);
+	HexTileMesh->SetCollisionProfileName(TEXT("TilePreset"));
 }
 
 void ATile::SetGridPosition(const FCube& Position)
@@ -208,9 +206,6 @@ void ATile::DisplayMovementRange(const bool IsVisible)
 {
 	for (const auto Tile: TilesInMovementRange)
 	{
-		Tile->SetSelected(IsVisible, false);
+		Tile->ShowHighlight(IsVisible);
 	}
-
-	if (IsTileSelected)
-		SetSelected(true, false);
 }

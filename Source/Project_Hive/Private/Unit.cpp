@@ -1,6 +1,6 @@
 // Copyright 2023 Christoph Fleschutz. All Rights Reserved.
 
-#include "AI/NavigableUnit.h"
+#include "AI/Unit.h"
 
 #include "World/Tiles/Tile.h"
 #include "AI/AStarNavigation.h"
@@ -13,33 +13,36 @@
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
-ANavigableUnit::ANavigableUnit()
+AUnit::AUnit()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
+	MeshComponent->SetupAttachment(RootComponent);
 }
 
 // Called every frame
-void ANavigableUnit::Tick(float DeltaTime)
+void AUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
 // Called to bind functionality to input
-void ANavigableUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
 
-void ANavigableUnit::OnPlanningPhaseStarted()
+void AUnit::OnPlanningPhaseStarted()
 {
 }
 
-void ANavigableUnit::OnExecutionPhaseStarted()
+void AUnit::OnExecutionPhaseStarted()
 {
 	if (MovementPath.IsEmpty())
 		return;
@@ -52,7 +55,7 @@ void ANavigableUnit::OnExecutionPhaseStarted()
 	StartMoveToTarget();
 }
 
-void ANavigableUnit::SetStandingTile(ATile* Tile)
+void AUnit::SetStandingTile(ATile* Tile)
 {
 	if (!Tile->CanPlaceUnit())
 		return;
@@ -62,12 +65,12 @@ void ANavigableUnit::SetStandingTile(ATile* Tile)
 	SetActorLocation(StandingTile->GetActorLocation() + FVector(0.0, 0.0, 100.0));
 }
 
-bool ANavigableUnit::CanMoveTo(ATile* Tile)
+bool AUnit::CanMoveTo(ATile* Tile)
 {
-	return UnitType == Tile->GetType();
+	return UnitMoveTypes.Contains(Tile->GetType());
 }
 
-void ANavigableUnit::SetMoveTarget(ATile* TargetTile)
+void AUnit::SetMoveTarget(ATile* TargetTile)
 {
 	if (FCube::Distance(StandingTile->GetGridPosition(), TargetTile->GetGridPosition()) > MovementRange)
 		return;
@@ -88,12 +91,12 @@ void ANavigableUnit::SetMoveTarget(ATile* TargetTile)
 	}
 }
 
-void ANavigableUnit::StartMoveToTarget()
+void AUnit::StartMoveToTarget()
 {
 	MoveToNextTileOnPath();
 }
 
-void ANavigableUnit::MoveToNextTileOnPath()
+void AUnit::MoveToNextTileOnPath()
 {
 	if (MovementPath.IsEmpty())
 		return;
@@ -103,7 +106,7 @@ void ANavigableUnit::MoveToNextTileOnPath()
 	MoveToTile(NextTile);
 }
 
-void ANavigableUnit::OnMoveToTileFinished()
+void AUnit::OnMoveToTileFinished()
 {
 	IsMoving = false;
 	if (!MovementPath.IsEmpty())
@@ -122,12 +125,14 @@ void ANavigableUnit::OnMoveToTileFinished()
 }
 
 // Called when the game starts or when spawned
-void ANavigableUnit::BeginPlay()
+void AUnit::BeginPlay()
 {
 	Super::BeginPlay();
 
 	const auto Movement = GetCharacterMovement();
 	Movement->MaxWalkSpeed = 300.0f;
+
+	MeshComponent->SetCollisionProfileName(TEXT("UnitPreset"));
 
 	const auto World = GetWorld();
 	if (!World)
@@ -135,18 +140,18 @@ void ANavigableUnit::BeginPlay()
 	// Connect to game-mode events
 	if (const auto GameMode = Cast<ATurnBasedGameMode>(UGameplayStatics::GetGameMode(World)))
 	{
-		GameMode->OnPlanningPhaseStartedEvent().AddUObject(this, &ANavigableUnit::OnPlanningPhaseStarted);
-		GameMode->OnExecutionPhaseStartedEvent().AddUObject(this, &ANavigableUnit::OnExecutionPhaseStarted);
+		GameMode->OnPlanningPhaseStartedEvent().AddUObject(this, &AUnit::OnPlanningPhaseStarted);
+		GameMode->OnExecutionPhaseStartedEvent().AddUObject(this, &AUnit::OnExecutionPhaseStarted);
 	}
 }
 
-void ANavigableUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void AUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
 }
 
-void ANavigableUnit::MoveToTile(ATile* NextTile)
+void AUnit::MoveToTile(ATile* NextTile)
 {
 	if (!NextTile->CanPlaceUnit())
 		return;

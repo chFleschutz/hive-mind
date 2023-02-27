@@ -1,0 +1,38 @@
+[
+	{
+		"Name": "Fighter",
+		"Icon": "/Script/Engine.Texture2D'/Game/Icons/unit.unit'",
+		"UnitClass": "None",
+		"CreationTime": 1,
+		"Cost":
+		{
+			"Gold": 10,
+			"Wood": 2,
+			"Food": 0
+		}
+	},
+	{
+		"Name": "Archer",
+		"Icon": "/Script/Engine.Texture2D'/Game/Icons/unit.unit'",
+		"UnitClass": "None",
+		"CreationTime": 2,
+		"Cost":
+		{
+			"Gold": 5,
+			"Wood": 10,
+			"Food": 0
+		}
+	},
+	{
+		"Name": "Cavalry",
+		"Icon": "/Script/Engine.Texture2D'/Game/Icons/unit.unit'",
+		"UnitClass": "None",
+		"CreationTime": 3,
+		"Cost":
+		{
+			"Gold": 5,
+			"Wood": 2,
+			"Food": 10
+		}
+	}
+]
