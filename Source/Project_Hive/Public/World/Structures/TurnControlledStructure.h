@@ -16,8 +16,10 @@ class PROJECT_HIVE_API ATurnControlledStructure : public ATileStructure
 
 public:
 	// Overridable event called when planning phase was started by game-mode
+	UFUNCTION()
 	virtual void OnPlanningPhaseStarted() {}
 	// Overridable event called when execution phase was started by game-mode
+	UFUNCTION()
 	virtual void OnExecutionPhaseStarted() {}
 
 protected:

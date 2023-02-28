@@ -13,7 +13,7 @@ struct FUnitCreationInfo
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		TSubclassOf<class AUnit> UnitClass;
+		FUnitData UnitData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		int32 TurnsRemaining;
@@ -34,6 +34,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartCreatingUnit(const FUnitData& UnitData);
 
+	UFUNCTION(BlueprintCallable)
+		TArray<FUnitCreationInfo> GetSpawnQueue();
+
 	virtual void OnExecutionPhaseStarted() override;
 
 protected:
@@ -41,7 +44,7 @@ protected:
 		int32 MaxQueueSize = 3;
 
 private:
-	void SpawnUnit(TSubclassOf<AUnit> UnitClass) const;
+	void SpawnUnit(TSubclassOf<class AUnit> UnitClass) const;
 
 	TArray<FUnitCreationInfo> CreationQueue;
 };

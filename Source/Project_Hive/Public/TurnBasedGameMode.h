@@ -16,6 +16,9 @@ enum class EGamePhase : uint8
 	GP_Max			UMETA(Hidden),
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlanningPhaseDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FExecutionPhaseDelegate);
+
 /**
  * 
  */
@@ -30,6 +33,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayerFinishedTurn();
 
+	UFUNCTION(BlueprintCallable)
+	EGamePhase GetGamePhase() const { return GamePhase; }
+	
 	/**
 	 * Signals to wait with switching to planning phase (Use when doing animations, moving, etc)
 	 * Meant to be called inside the ExecutionPhaseEvent
@@ -43,21 +49,25 @@ public:
 	 */
 	void ObjectExecutionFinished();
 
-	DECLARE_EVENT(ATurnBasedGameMode, FPlanningPhaseEvent)
-	FPlanningPhaseEvent& OnPlanningPhaseStartedEvent() { return PlanningPhaseEvent; }
+	//DECLARE_EVENT(ATurnBasedGameMode, FPlanningPhaseEvent)
+	//FPlanningPhaseEvent& OnPlanningPhaseStartedEvent() { return PlanningPhaseEvent; }
 
-	DECLARE_EVENT(ATurnBasedGameMode, FExecutionPhaseEvent)
-	FExecutionPhaseEvent& OnExecutionPhaseStartedEvent() { return ExecutionPhaseEvent; }
+	//DECLARE_EVENT(ATurnBasedGameMode, FExecutionPhaseEvent)
+	//FExecutionPhaseEvent& OnExecutionPhaseStartedEvent() { return ExecutionPhaseEvent; }
 
-	EGamePhase GetGamePhase() const { return GamePhase; }
+	UPROPERTY(BlueprintAssignable)
+		FPlanningPhaseDelegate OnPlanningPhaseStarted;
+
+	UPROPERTY(BlueprintAssignable)
+		FExecutionPhaseDelegate OnExecutionPhaseStarted;
 
 protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Game")
 		EGamePhase GamePhase = EGamePhase::GP_Planning;
 
 private:
-	FPlanningPhaseEvent PlanningPhaseEvent;
-	FExecutionPhaseEvent ExecutionPhaseEvent;
+	//FPlanningPhaseEvent PlanningPhaseEvent;
+	//FExecutionPhaseEvent ExecutionPhaseEvent;
 
 	void StartPlanningPhase();
 	void StartExecutionPhase();

@@ -24,7 +24,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION()
 	virtual void OnPlanningPhaseStarted();
+	UFUNCTION()
 	virtual void OnExecutionPhaseStarted();
 
 	void SetStandingTile(ATile* Tile);

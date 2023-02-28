@@ -35,7 +35,8 @@ void ATurnBasedGameMode::StartPlanningPhase()
 {
 	GamePhase = EGamePhase::GP_Planning;
 	NumPlayerReady = 0;
-	PlanningPhaseEvent.Broadcast();
+	//PlanningPhaseEvent.Broadcast();
+	OnPlanningPhaseStarted.Broadcast();
 }
 
 void ATurnBasedGameMode::StartExecutionPhase()
@@ -44,6 +45,7 @@ void ATurnBasedGameMode::StartExecutionPhase()
 	NumExecuting = 0;
 
 	ObjectExecutionStarted();
-	ExecutionPhaseEvent.Broadcast();
+	//ExecutionPhaseEvent.Broadcast();
+	OnExecutionPhaseStarted.Broadcast();
 	ObjectExecutionFinished();
 }

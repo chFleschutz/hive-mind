@@ -10,7 +10,12 @@ void AUnitSpawnableStructure::StartCreatingUnit(const FUnitData& UnitData)
 	if (CreationQueue.Num() == MaxQueueSize)
 		return;
 
-	CreationQueue.Emplace(FUnitCreationInfo{ UnitData.UnitClass,UnitData.CreationTime });
+	CreationQueue.Emplace(FUnitCreationInfo{ UnitData,UnitData.CreationTime });
+}
+
+TArray<FUnitCreationInfo> AUnitSpawnableStructure::GetSpawnQueue()
+{
+	return CreationQueue;
 }
 
 void AUnitSpawnableStructure::OnExecutionPhaseStarted()
@@ -21,7 +26,7 @@ void AUnitSpawnableStructure::OnExecutionPhaseStarted()
 	{
 		if (Info.TurnsRemaining == 0)
 		{
-			SpawnUnit(Info.UnitClass);
+			SpawnUnit(Info.UnitData.UnitClass);
 			return true;
 		}
 		return false;
@@ -43,11 +48,11 @@ void AUnitSpawnableStructure::SpawnUnit(const TSubclassOf<AUnit> UnitClass) cons
 
 		const auto Location = GetActorLocation();
 		const auto Rotation = GetActorRotation();
-		//FActorSpawnParameters Parameters;
-		//Parameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		if (const auto NewUnit = World->SpawnActor<AUnit>(UnitClass, Location, Rotation/*, Parameters*/))
+		FActorSpawnParameters Parameters;
+		Parameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		if (const auto NewUnit = World->SpawnActor<AUnit>(UnitClass, Location, Rotation, Parameters))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, NewUnit->GetName());
+			// Todo: set unit on Tile
 		}
 	}
 }

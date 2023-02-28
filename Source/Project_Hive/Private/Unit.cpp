@@ -140,8 +140,10 @@ void AUnit::BeginPlay()
 	// Connect to game-mode events
 	if (const auto GameMode = Cast<ATurnBasedGameMode>(UGameplayStatics::GetGameMode(World)))
 	{
-		GameMode->OnPlanningPhaseStartedEvent().AddUObject(this, &AUnit::OnPlanningPhaseStarted);
-		GameMode->OnExecutionPhaseStartedEvent().AddUObject(this, &AUnit::OnExecutionPhaseStarted);
+		//GameMode->OnPlanningPhaseStartedEvent().AddUObject(this, &AUnit::OnPlanningPhaseStarted);
+		//GameMode->OnExecutionPhaseStartedEvent().AddUObject(this, &AUnit::OnExecutionPhaseStarted);
+		GameMode->OnPlanningPhaseStarted.AddDynamic(this, &AUnit::OnPlanningPhaseStarted);
+		GameMode->OnExecutionPhaseStarted.AddDynamic(this, &AUnit::OnExecutionPhaseStarted);
 	}
 }
 
