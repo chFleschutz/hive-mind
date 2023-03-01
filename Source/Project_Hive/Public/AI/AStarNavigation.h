@@ -34,5 +34,5 @@ private:
 	static float Heuristic(ATile* CurrentTile, ATile* GoalTile);
 
 	// Returns the cost of traveling from StartTile to NextTile
-	static int32 TravelCost(ATile* StartTile, ATile* NextTile);
+	static int32 TravelCost(ATile* StartTile, const ATile* NextTile);
 };

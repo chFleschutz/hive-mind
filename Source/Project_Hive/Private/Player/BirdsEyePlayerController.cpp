@@ -23,6 +23,18 @@ void ABirdsEyePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Check defaults
+	check(DefaultMapping);
+	check(SelectMapping);
+	check(BuildModeMapping);
+	check(ZoomAction);
+	check(LookAction);
+	check(MoveAction);
+	check(SelectAction);
+	check(MoveTargetAction);
+	check(BuildApplyAction);
+	check(BuildAbortAction);
+
 	// Set Input Mapping
 	if (const auto Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{

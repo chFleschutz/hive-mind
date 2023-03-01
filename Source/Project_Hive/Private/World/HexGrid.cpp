@@ -3,6 +3,8 @@
 #include "World/HexGrid.h"
 
 #include "Cube.h"
+#include "DataStructs.h"
+#include "Engine/DataTable.h"
 #include "World/TerrainGeneration/PerlinNoiseGenerator.h"
 #include "World/Tiles/Tile.h"
 
@@ -19,6 +21,10 @@ AHexGrid::AHexGrid()
 void AHexGrid::BeginPlay()
 {
 	Super::BeginPlay();
+
+	check(TilesDataTable);
+	check(StructuresDataTable);
+
 	Generate();
 }
 
@@ -80,22 +86,23 @@ FVector AHexGrid::WorldLocation(const FCube& GridPosition) const
 	return GridOrigin + FVector(x, y, 0.0);
 }
 
-ATile* AHexGrid::SpawnTile(const FCube& GridPosition, const TSubclassOf<ATile> TileToSpawn)
+ATile* AHexGrid::SpawnTile(const FCube& GridPosition, const FTileData* TileData)
 {
 	const auto World = GetWorld();
 	if (!IsValid(World))
 		return nullptr;
 
-	if (!IsValid(TileToSpawn))
+	if (!TileData)
 		return nullptr;
 
 	const auto Location = WorldLocation(GridPosition);
 	const auto Rotation = GetActorRotation();
-	const auto Tile = World->SpawnActor<ATile>(TileToSpawn, Location, Rotation);
+	const auto Tile = World->SpawnActor<ATile>(TileData->TileClass, Location, Rotation);
 
 	if (!IsValid(Tile))
 		return nullptr;
 
+	Tile->SetTileData(*TileData);
 	Tile->SetGridPosition(GridPosition);
 	Tile->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
 	Grid.Add(GridPosition, Tile);
@@ -103,53 +110,43 @@ ATile* AHexGrid::SpawnTile(const FCube& GridPosition, const TSubclassOf<ATile> T
 	return Tile;
 }
 
-TSubclassOf<ATile> AHexGrid::GetTileFor(const FCube& GridPos, float Value) const
+void AHexGrid::SpawnTileAt(const FCube& GridPos, float Value)
 {
-	const auto SumValues = SandValue + WaterValue + GrassValue;
-	if (Value < (SandValue / SumValues))
-	{
-		return SandTile;
-	}
-	else if (Value < (SandValue + WaterValue) / SumValues)
-	{
-		return WaterTile;
-	}
-	else
-	{
-		return GrassTile;
-	}
-}
-
-void AHexGrid::SpawnTileAt(const FCube& GridPos, const float Value)
-{
+	// Evaluate RowName for value
+	FName RowName;
 	const auto SumValues = SandValue + WaterValue + GrassValue;
 	if (Value < SandValue / SumValues)
-	{	// Sand Tile
-		const auto Tile = SpawnTile(GridPos, SandTile);
-		if (Value < MountainAmount)
-		{
-			Tile->BuildMountain();
-		}
-		else if (Value < DesertVegetationAmount)
-		{
-			Tile->BuildVegetation();
-		}
+	{
+		RowName = "Sand";
 	}
 	else if (Value < (SandValue + WaterValue) / SumValues)
-	{	// Water Tile
-		SpawnTile(GridPos, WaterTile);
+	{
+		RowName = "Water";
+		Value -= SandValue / SumValues;
 	}
 	else
-	{	// Grass Tile
-		const auto Tile = SpawnTile(GridPos, GrassTile);
-		if (Value > 1.0f - MountainAmount)
-		{
-			Tile->BuildMountain();
-		}
-		else if (Value > 1.0f - ForestAmount)
-		{
-			Tile->BuildVegetation();
-		}
+	{
+		RowName = "Grass";
+		//Value -= (SandValue + WaterValue) / SumValues; // Take lower part of range
+		Value = FMath::Abs(Value - ((SandValue + WaterValue + GrassValue) / SumValues)); // Take upper part of range
+	}
+
+	const auto TileData = TilesDataTable->FindRow<FTileData>(RowName, "Query for TileData");
+	const auto Tile = SpawnTile(GridPos, TileData);
+
+	if (!Tile) 
+		return;
+
+	// Build mountains and vegetation
+	if (Value < TileData->MountainAmount)
+	{
+		const auto StructureData = StructuresDataTable->FindRow<FStructureData>(TileData->MountainStructure, "Query for MountainStructure");
+		Tile->BuildStructure(StructureData);
+	}
+	else if (Value < TileData->VegetationAmount)
+	{
+		const auto StructureData = StructuresDataTable->FindRow<FStructureData>(TileData->VegetationStructure, "Query for VegetationStructure");
+		Tile->BuildStructure(StructureData);
 	}
 }
 
@@ -158,7 +155,7 @@ void AHexGrid::SetAllNeighbors()
 	for (const auto& Element : Grid)
 	{
 		const auto Tile = Element.Value;
-		auto Position = Element.Key;
+		const auto Position = Element.Key;
 		for (const auto& Direction : FCube::DirectionVectors())
 		{
 			auto NeighborPosition = Position + Direction;

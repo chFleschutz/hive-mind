@@ -21,6 +21,11 @@ ATile::ATile()
 	CenterSocket->SetupAttachment((HexTileMesh));
 }
 
+void ATile::SetTileData(const FTileData& Data)
+{
+	TileData = Data;
+}
+
 // Called every frame
 void ATile::Tick(float DeltaTime)
 {
@@ -108,6 +113,24 @@ void ATile::RemoveUnit()
 	TilesInMovementRange.Empty();
 }
 
+bool ATile::BlocksMovement() const
+{
+	if (!Structure)
+		return false;
+
+	return Structure->BlocksUnitMovement();
+}
+
+int32 ATile::GetTravelCost() const
+{
+	auto TravelCost = TileData.BaseTravelCost;
+
+	if (Structure)
+		TravelCost += Structure->AddedTravelCost();
+
+	return TravelCost;
+}
+
 void ATile::BuildVegetation()
 {
 	BuildStructure(VegetationType);
@@ -143,6 +166,7 @@ void ATile::AppendStructure(ATileStructure* NewStructure)
 	Structure->SetActorLocation(CenterSocket->GetComponentLocation());
 	const FAttachmentTransformRules Rules(EAttachmentRule::KeepWorld, false);
 	Structure->AttachToActor(this, Rules);
+	Structure->SetTile(this);
 }
 
 void ATile::BuildStructure(const TSubclassOf<ATileStructure> StructureType)
@@ -158,6 +182,23 @@ void ATile::BuildStructure(const TSubclassOf<ATileStructure> StructureType)
 		const auto Location = CenterSocket->GetComponentLocation();
 		const auto Rotation = FRotator(0.0, 60.0 * FMath::RandRange(0, 5), 0.0);
 		const auto NewStructure = World->SpawnActor<ATileStructure>(StructureType, Location, Rotation);
+		AppendStructure(NewStructure);
+	}
+}
+
+void ATile::BuildStructure(const FStructureData* StructureData)
+{
+	if (!StructureData)
+		return;
+	if (Structure)
+		return;
+
+	if (const auto World = GetWorld())
+	{
+		const auto Location = CenterSocket->GetComponentLocation();
+		const auto Rotation = FRotator(0.0, 60.0 * FMath::RandRange(0, 5), 0.0);
+		const auto NewStructure = World->SpawnActor<ATileStructure>(StructureData->StructureClass, Location, Rotation);
+		NewStructure->SetStructureData(*StructureData);
 		AppendStructure(NewStructure);
 	}
 }

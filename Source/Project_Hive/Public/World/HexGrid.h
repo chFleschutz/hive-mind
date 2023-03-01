@@ -8,6 +8,7 @@
 #include "HexGrid.generated.h"
 
 class FCube;
+class UDataTable;
 
 UCLASS()
 class PROJECT_HIVE_API AHexGrid final : public AActor
@@ -51,7 +52,7 @@ protected:
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Layout|Random")
 		int32 NoiseCellSize = 5;
-	
+
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Layout|Random")
 		float SandValue = 0.5f;
 
@@ -61,6 +62,7 @@ protected:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Layout|Random")
 		float GrassValue = 1.0f;
 
+	// Todo Remove this
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Layout|Random")
 		float ForestAmount = 0.4f;
 
@@ -69,31 +71,24 @@ protected:
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Layout|Random")
 		float MountainAmount = 0.05f;
+	// Todo Remove Till here
 
-	// Tiles
-	//
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Layout|Tiles")
-		TSubclassOf<ATile> GrassTile;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Layout|Tiles")
+		UDataTable* TilesDataTable;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Layout|Tiles")
-		TSubclassOf<ATile> SandTile;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Layout|Tiles")
-		TSubclassOf<ATile> WaterTile;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Layout|Tiles")
+		UDataTable* StructuresDataTable;
 
 private:
 	void GenerateCircle();
 	// Returns the world-location for the grid coordinate
 	FVector WorldLocation(const FCube& GridPosition) const;
 	// Spawn a Tile at gridPosition 
-	ATile* SpawnTile(const FCube& GridPosition, TSubclassOf<ATile> TileToSpawn);
-	// Returns a tile based on value
-	TSubclassOf<ATile> GetTileFor(const FCube& GridPos, float Value) const;
+	ATile* SpawnTile(const FCube& GridPosition, const FTileData* TileData);
 	void SpawnTileAt(const FCube& GridPos, float Value);
 	void SetAllNeighbors();
-	
-	// ReSharper disable once CppUE4ProbableMemoryIssuesWithUObjectsInContainer because FCube is not a UClass
+	 
+	// ReSharper disable once CppUE4ProbableMemoryIssuesWithUObjectsInContainer FCube cant be UProperty
 	TMap<FCube, ATile*> Grid;
-
 	FVector GridOrigin;
 };

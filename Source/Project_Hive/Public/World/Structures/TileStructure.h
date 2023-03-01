@@ -8,6 +8,8 @@
 #include "GameFramework/Actor.h"
 #include "TileStructure.generated.h"
 
+class ATile;
+
 /** Current state of the structure */
 UENUM(BlueprintType)
 enum class EStructureState : uint8
@@ -20,7 +22,6 @@ enum class EStructureState : uint8
 	Max		UMETA(Hidden),
 };
 
-
 UCLASS()
 class PROJECT_HIVE_API ATileStructure : public AActor
 {
@@ -29,6 +30,8 @@ class PROJECT_HIVE_API ATileStructure : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ATileStructure();
+
+	void SetTile(ATile* Tile) { FoundationTile = Tile; }
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -39,7 +42,9 @@ public:
 
 	virtual bool CheckFoundationSupport(EFoundationType Foundation) const;
 
-	virtual bool BlocksUnitMovement() const { return false; }
+	virtual bool BlocksUnitMovement() const { return StructureData.BlocksMovement; }
+
+	virtual int32 AddedTravelCost() const { return StructureData.AddedTravelCost; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FStructureData GetData() const { return StructureData; }
@@ -56,10 +61,14 @@ protected:
 
 	/** Hex Static Mesh Component */
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Defaults")
-		class UStaticMeshComponent* TileStructureMesh;
+		UStaticMeshComponent* TileStructureMesh;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Structure")
 		EStructureState State = EStructureState::Planning;
 
-	FStructureData StructureData;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		FStructureData StructureData;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		ATile* FoundationTile;
 };

@@ -34,6 +34,50 @@ enum class EFoundationType : uint8
 };
 
 
+/** Data struct of a hex-tile */
+USTRUCT(BlueprintType)
+struct FTileData : public FTableRowBase
+{
+	GENERATED_BODY()
+public:
+	/** Display Name */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "Name"))
+		FString Name;
+
+	/** Class to spawn the tile from */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "TileClass", MakeStructureDefaultValue = "None"))
+		TObjectPtr<UClass> TileClass;
+
+	/** Foundation type */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "FoundationType", MakeStructureDefaultValue = "FT_Grass"))
+		EFoundationType FoundationType;
+
+	/** Name of the vegetation-structure to use */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "VegetationStructure", MakeStructureDefaultValue = "None"))
+		FName VegetationStructure;
+
+	/** Name of the mountain-structure to use */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "MountainStructure", MakeStructureDefaultValue = "None"))
+		FName MountainStructure;
+
+	/** Static Mesh */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "Mesh", MakeStructureDefaultValue = "None"))
+		TObjectPtr<UStaticMesh> Mesh;
+
+	/** Amount of Vegetation on Tiles */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "VegetationAmount", MakeStructureDefaultValue = "0.000000"))
+		double VegetationAmount;
+
+	/** Amount of Mountains on Tiles */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "MountainAmount", MakeStructureDefaultValue = "0.000000"))
+		double MountainAmount;
+
+	/** Base cost to move on the tile */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "BaseTravelCost"))
+		int32 BaseTravelCost;
+};
+
+
 /** Data struct of a buildable structure */
 USTRUCT(BlueprintType)
 struct FStructureData : public FTableRowBase
@@ -45,15 +89,15 @@ public:
 		FText Name;
 
 	/** Icon to use in UI  */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "Icon"))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "Icon", MakeStructureDefaultValue = "/Script/Engine.Texture2D'/Game/Assets/Forest/forestThumbnail.forestThumbnail'"))
 		TObjectPtr<UTexture2D> Icon;
 
 	/** Class from which actor will be spawned */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "StructureClass"))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "StructureClass", MakeStructureDefaultValue = "None"))
 		TObjectPtr<UClass> StructureClass;
 
 	/** Mesh to show in preview */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "Mesh"))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "Mesh", MakeStructureDefaultValue = "None"))
 		TObjectPtr<UStaticMesh> Mesh;
 
 	/** Valid foundation types to build the structure on */
@@ -61,14 +105,21 @@ public:
 		TArray<EFoundationType> SupportedFoundationTypes;
 
 	/** Resource cost of building the structure */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "ResourceCost"))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "ResourceCost", MakeStructureDefaultValue = "(Gold=0,Wood=0,Food=0)"))
 		FResource ResourceCost;
 
 	/** Unit types which can be spawned by the structure */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "SpawnableUnitTypes"))
 		TArray<FName> SpawnableUnitTypes;
-};
 
+	/** Whether the structure blocks moving on the tile */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "BlocksMovement", MakeStructureDefaultValue = "False"))
+		bool BlocksMovement;
+
+	/** Travel-cost added by the structure to the tile */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "AddedTravelCost"))
+		int32 AddedTravelCost;
+};
 
 
 /** Please add a struct description */

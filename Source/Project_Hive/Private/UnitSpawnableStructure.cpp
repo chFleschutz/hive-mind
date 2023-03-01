@@ -52,7 +52,7 @@ void AUnitSpawnableStructure::SpawnUnit(const TSubclassOf<AUnit> UnitClass) cons
 		Parameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		if (const auto NewUnit = World->SpawnActor<AUnit>(UnitClass, Location, Rotation, Parameters))
 		{
-			// Todo: set unit on Tile
+			NewUnit->SetStandingTile(FoundationTile);
 		}
 	}
 }

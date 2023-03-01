@@ -50,7 +50,7 @@ protected:
 		int32 MovementRange = 3;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
-		TArray<EFoundationType> UnitMoveTypes;
+		TArray<EFoundationType> UnitMovementTypes;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Defaults")
 		UStaticMeshComponent* MeshComponent;

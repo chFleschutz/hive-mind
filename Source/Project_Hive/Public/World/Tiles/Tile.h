@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Cube.h"
-
+#include "DataStructs.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Tile.generated.h"
@@ -20,7 +20,7 @@ class PROJECT_HIVE_API ATile : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ATile();
-	
+	void SetTileData(const FTileData& Data);
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -40,9 +40,13 @@ public:
 	void ShowHighlight(bool IsHighlighted) const;
 
 	virtual bool CanBuild(ATileStructure* NewStructure);
+
 	UFUNCTION(BlueprintCallable)
 	virtual void Build(ATileStructure* NewStructure);
-	
+
+	void BuildStructure(TSubclassOf<ATileStructure> StructureType);
+	void BuildStructure(const FStructureData* StructureData);
+
 	bool CanDestroyBuilding() const;
 	void DestroyBuilding();
 
@@ -53,6 +57,8 @@ public:
 	bool PlaceUnit(AUnit* Unit);
 	AUnit* GetUnit() const { return PlacedUnit; }
 	void RemoveUnit();
+	bool BlocksMovement() const;
+	int32 GetTravelCost() const;
 
 	UFUNCTION(BlueprintCallable)
 	FVector GetCenterSocketLocation() const { return CenterSocket->GetComponentLocation(); }
@@ -93,9 +99,11 @@ protected:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Tile Settings")
 		AUnit* PlacedUnit = nullptr;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		FTileData TileData;
+
 private:
 	void AppendStructure(ATileStructure* NewStructure);
-	void BuildStructure(TSubclassOf<ATileStructure> StructureType);
 
 	void QueryTilesInMovementRange();
 	void DisplayMovementRange(bool IsVisible);

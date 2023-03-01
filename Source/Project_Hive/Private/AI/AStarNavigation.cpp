@@ -60,9 +60,8 @@ float UAStarNavigation::Heuristic(ATile* CurrentTile, ATile* GoalTile)
 	return FCube::Distance(CurrentTile->GetGridPosition(), GoalTile->GetGridPosition());
 }
 
-int32 UAStarNavigation::TravelCost(ATile* StartTile, ATile* NextTile)
+int32 UAStarNavigation::TravelCost(ATile* StartTile, const ATile* NextTile)
 {
-	// TODO: Get Travel cost between Tiles
-	
-	return 1;
+	// TODO: Improve Travel cost between Tiles
+	return NextTile->GetTravelCost();
 }

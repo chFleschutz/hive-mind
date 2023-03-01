@@ -1,0 +1,32 @@
+[
+	{
+		"Name": "Sand",
+		"TileClass": "/Script/Engine.BlueprintGeneratedClass'/Game/Blueprints/Tiles/BP_SandTile.BP_SandTile_C'",
+		"FoundationType": "FT_Sand",
+		"VegetationStructure": "Desert",
+		"MountainStructure": "Mountain",
+		"Mesh": "/Script/Engine.StaticMesh'/Game/Assets/Tiles/honeycomb.honeycomb'",
+		"VegetationAmount": 0.10000000000000001,
+		"MountainAmount": 0.050000000000000003
+	},
+	{
+		"Name": "Water",
+		"TileClass": "/Script/Engine.BlueprintGeneratedClass'/Game/Blueprints/Tiles/BP_WaterTile.BP_WaterTile_C'",
+		"FoundationType": "FT_Water",
+		"VegetationStructure": "None",
+		"MountainStructure": "None",
+		"Mesh": "/Script/Engine.StaticMesh'/Game/Assets/Tiles/honeycomb.honeycomb'",
+		"VegetationAmount": 0,
+		"MountainAmount": 0
+	},
+	{
+		"Name": "Grass",
+		"TileClass": "/Script/Engine.BlueprintGeneratedClass'/Game/Blueprints/Tiles/BP_GrassTile.BP_GrassTile_C'",
+		"FoundationType": "FT_Grass",
+		"VegetationStructure": "Forest",
+		"MountainStructure": "Mountain",
+		"Mesh": "/Script/Engine.StaticMesh'/Game/Assets/Tiles/honeycomb.honeycomb'",
+		"VegetationAmount": 0.29999999999999999,
+		"MountainAmount": 0.050000000000000003
+	}
+]

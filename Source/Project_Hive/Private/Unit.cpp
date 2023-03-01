@@ -67,7 +67,10 @@ void AUnit::SetStandingTile(ATile* Tile)
 
 bool AUnit::CanMoveTo(ATile* Tile)
 {
-	return UnitMoveTypes.Contains(Tile->GetType());
+	if (!Tile)
+		return false;
+
+	return !Tile->BlocksMovement() && UnitMovementTypes.Contains(Tile->GetType());
 }
 
 void AUnit::SetMoveTarget(ATile* TargetTile)
