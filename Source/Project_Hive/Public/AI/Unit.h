@@ -2,12 +2,13 @@
 
 #pragma once
 
-#include "World/Tiles/Tile.h"
-
 #include "CoreMinimal.h"
+#include "DataStructs.h"
 #include "GameFramework/Character.h"
 #include "Unit.generated.h"
 
+class ATile;
+class UWidgetComponent;
 
 UCLASS()
 class PROJECT_HIVE_API AUnit : public ACharacter
@@ -18,6 +19,8 @@ public:
 	// Sets default values for this character's properties
 	AUnit();
 
+	void Initialize(const FUnitData& Data);
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -26,6 +29,7 @@ public:
 
 	UFUNCTION()
 	virtual void OnPlanningPhaseStarted();
+
 	UFUNCTION()
 	virtual void OnExecutionPhaseStarted();
 
@@ -46,24 +50,29 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
-		int32 MovementRange = 3;
+	void MoveToTile(ATile* NextTile);
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
-		TArray<EFoundationType> UnitMovementTypes;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Defaults")
+		FUnitData UnitData;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Defaults")
 		UStaticMeshComponent* MeshComponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Defaults")
+		UWidgetComponent* HealthWidgetComponent;
+
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Movement")
 		TArray<ATile*> MovementPath;
 
-private:
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Movement")
+		int32 MovementRange;
+
 	UPROPERTY(VisibleInstanceOnly, Category = "Movement")
 		ATile* StandingTile;
 
 	UPROPERTY(VisibleInstanceOnly, Category = "Movement")
 		bool IsMoving = false;
 
-	void MoveToTile(ATile* NextTile);
+	UPROPERTY(VisibleInstanceOnly, Category = "Combat")
+		float CurrentHealth;
 };

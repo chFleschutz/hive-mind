@@ -2,15 +2,18 @@
 
 #include "AI/Unit.h"
 
-#include "World/Tiles/Tile.h"
 #include "AI/AStarNavigation.h"
 #include "AI/UnitAIController.h"
 #include "TurnBasedGameMode.h"
-#include "Components/CapsuleComponent.h"
+#include "World/Tiles/Tile.h"
+
+#include "Blueprint/UserWidget.h"
+#include "Components/WidgetComponent.h"
 #include "Engine/StaticMeshSocket.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/HealthBar.h"
 
 // Sets default values
 AUnit::AUnit()
@@ -22,6 +25,23 @@ AUnit::AUnit()
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
 	MeshComponent->SetupAttachment(RootComponent);
+
+	HealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("InfoWidget"));
+	HealthWidgetComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+}
+
+void AUnit::Initialize(const FUnitData& Data)
+{
+	UnitData = Data;
+
+	// Setup Health
+	CurrentHealth = UnitData.MaxHealth;
+	MovementRange = UnitData.MovementRange;
+	if (const auto HealthBar = Cast<UHealthBar>(HealthWidgetComponent->GetUserWidgetObject()))
+	{
+		HealthBar->SetMaxHealth(UnitData.MaxHealth);
+		HealthBar->SetCurrentHealth(CurrentHealth);
+	}
 }
 
 // Called every frame
@@ -70,7 +90,7 @@ bool AUnit::CanMoveTo(ATile* Tile)
 	if (!Tile)
 		return false;
 
-	return !Tile->BlocksMovement() && UnitMovementTypes.Contains(Tile->GetType());
+	return !Tile->BlocksMovement() && UnitData.UnitFoundationSupport.Contains(Tile->GetType());
 }
 
 void AUnit::SetMoveTarget(ATile* TargetTile)
@@ -136,15 +156,14 @@ void AUnit::BeginPlay()
 	Movement->MaxWalkSpeed = 300.0f;
 
 	MeshComponent->SetCollisionProfileName(TEXT("UnitPreset"));
-
+	
 	const auto World = GetWorld();
 	if (!World)
 		return;
+
 	// Connect to game-mode events
 	if (const auto GameMode = Cast<ATurnBasedGameMode>(UGameplayStatics::GetGameMode(World)))
 	{
-		//GameMode->OnPlanningPhaseStartedEvent().AddUObject(this, &AUnit::OnPlanningPhaseStarted);
-		//GameMode->OnExecutionPhaseStartedEvent().AddUObject(this, &AUnit::OnExecutionPhaseStarted);
 		GameMode->OnPlanningPhaseStarted.AddDynamic(this, &AUnit::OnPlanningPhaseStarted);
 		GameMode->OnExecutionPhaseStarted.AddDynamic(this, &AUnit::OnExecutionPhaseStarted);
 	}

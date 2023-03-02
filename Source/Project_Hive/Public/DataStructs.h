@@ -122,7 +122,7 @@ public:
 };
 
 
-/** Please add a struct description */
+/** Data struct of a unit */
 USTRUCT(BlueprintType)
 struct FUnitData : public FTableRowBase
 {
@@ -147,5 +147,16 @@ public:
 	/** Cost to create  */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "Cost", MakeStructureDefaultValue = "(Gold=0,Wood=0,Food=0)"))
 		FResource Cost;
-};
 
+	/** Maximum Health */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "MaxHealth", MakeStructureDefaultValue = "1.000000"))
+		double MaxHealth;
+
+	/** Maximum number of tiles to move in one turn */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "MovementRange"))
+		int32 MovementRange;
+
+	/** Foundation types the unit can move on */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "UnitFoundationSupport"))
+		TArray<EFoundationType> UnitFoundationSupport;
+};

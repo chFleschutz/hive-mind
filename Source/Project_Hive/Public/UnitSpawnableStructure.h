@@ -44,7 +44,7 @@ protected:
 		int32 MaxQueueSize = 3;
 
 private:
-	void SpawnUnit(TSubclassOf<class AUnit> UnitClass) const;
+	void SpawnUnit(const FUnitData& UnitData) const;
 
 	TArray<FUnitCreationInfo> CreationQueue;
 };

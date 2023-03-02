@@ -26,7 +26,7 @@ void AUnitSpawnableStructure::OnExecutionPhaseStarted()
 	{
 		if (Info.TurnsRemaining == 0)
 		{
-			SpawnUnit(Info.UnitData.UnitClass);
+			SpawnUnit(Info.UnitData);
 			return true;
 		}
 		return false;
@@ -39,19 +39,17 @@ void AUnitSpawnableStructure::OnExecutionPhaseStarted()
 	}
 }
 
-void AUnitSpawnableStructure::SpawnUnit(const TSubclassOf<AUnit> UnitClass) const
+void AUnitSpawnableStructure::SpawnUnit(const FUnitData& UnitData) const
 {
 	if (const auto World = GetWorld())
 	{
-		if (!IsValid(UnitClass))
-			return;
-
 		const auto Location = GetActorLocation();
 		const auto Rotation = GetActorRotation();
 		FActorSpawnParameters Parameters;
 		Parameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		if (const auto NewUnit = World->SpawnActor<AUnit>(UnitClass, Location, Rotation, Parameters))
+		if (const auto NewUnit = World->SpawnActor<AUnit>(UnitData.UnitClass, Location, Rotation, Parameters))
 		{
+			NewUnit->Initialize(UnitData);
 			NewUnit->SetStandingTile(FoundationTile);
 		}
 	}
