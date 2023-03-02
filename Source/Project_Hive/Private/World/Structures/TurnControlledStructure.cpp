@@ -3,7 +3,7 @@
 
 #include "World/Structures/TurnControlledStructure.h"
 
-#include "TurnBasedGameMode.h"
+#include "Game/TurnBasedGameMode.h"
 #include "Kismet/GameplayStatics.h"
 
 void ATurnControlledStructure::BeginPlay()

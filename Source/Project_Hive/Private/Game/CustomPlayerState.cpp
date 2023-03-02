@@ -1,7 +1,7 @@
 // Copyright 2023 Christoph Fleschutz. All Rights Reserved.
 
 
-#include "CustomPlayerState.h"
+#include "Game/CustomPlayerState.h"
 
 bool ACustomPlayerState::CanAfford(const FResource& ResourceCost) const
 {

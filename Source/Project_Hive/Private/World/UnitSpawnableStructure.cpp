@@ -1,7 +1,7 @@
 // Copyright 2023 Christoph Fleschutz. All Rights Reserved.
 
 
-#include "UnitSpawnableStructure.h"
+#include "World/UnitSpawnableStructure.h"
 
 #include "AI/Unit.h"
 

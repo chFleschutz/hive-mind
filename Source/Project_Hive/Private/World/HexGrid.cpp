@@ -2,8 +2,8 @@
 
 #include "World/HexGrid.h"
 
-#include "Cube.h"
-#include "DataStructs.h"
+#include "Utility/Cube.h"	
+#include "Utility/DataStructs.h"
 #include "Engine/DataTable.h"
 #include "World/TerrainGeneration/PerlinNoiseGenerator.h"
 #include "World/Tiles/Tile.h"

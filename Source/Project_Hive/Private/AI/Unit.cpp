@@ -4,7 +4,7 @@
 
 #include "AI/AStarNavigation.h"
 #include "AI/UnitAIController.h"
-#include "TurnBasedGameMode.h"
+#include "Game/TurnBasedGameMode.h"
 #include "World/Tiles/Tile.h"
 
 #include "Blueprint/UserWidget.h"

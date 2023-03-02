@@ -4,7 +4,7 @@
 
 
 #include "CoreMinimal.h"
-#include "DataStructs.h"
+#include "Utility/DataStructs.h"
 #include "GameFramework/Actor.h"
 #include "TileStructure.generated.h"
 

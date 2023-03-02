@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DataStructs.h"
+#include "Utility/DataStructs.h"
 #include "World/Structures/TurnControlledStructure.h"
 #include "UnitSpawnableStructure.generated.h"
 

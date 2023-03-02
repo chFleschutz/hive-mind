@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "Cube.h"
-#include "DataStructs.h"
+#include "Utility/Cube.h"
+#include "Utility/DataStructs.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Tile.generated.h"

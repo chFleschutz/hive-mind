@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DataStructs.h"
+#include "Utility/DataStructs.h"
 #include "GameFramework/Character.h"
 #include "Unit.generated.h"
 
