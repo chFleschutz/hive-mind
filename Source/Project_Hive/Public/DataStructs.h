@@ -3,23 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Resource.h"
 #include "Engine/DataTable.h"
 #include "UObject/NoExportTypes.h"
 #include "DataStructs.generated.h"
-
-/** Resources to buy things */
-USTRUCT(BlueprintType)
-struct FResource
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		int32 Gold;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		int32 Wood;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		int32 Food;
-};
 
 
 /** Foundation types of tiles */
