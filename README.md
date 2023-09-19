@@ -1,5 +1,9 @@
 # Hive Mind - Turn-Based Strategy Game
 
+<p>
+<img src="./hive-mind-image.png" width="500">
+</p>
+
 ## Overview
 
 Hive Mind is a turn-based strategy game developed in Unreal Engine 5. In this game, players navigate a procedurally generated world made up of hexagonal tiles featuring various terrain types such as forests, lakes, mountains, and deserts. Players have the ability to establish buildings and deploy units from them. These units can be moved a certain distance each turn. The procedural map generation utilizes Perlin noise to create diverse and engaging landscapes.
