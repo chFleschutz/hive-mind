@@ -25,3 +25,7 @@ Make sure Unreal Engine version ```5.1``` is installed
    ```
    
 2. Open the project with Unreal Engine 5.1
+
+#   
+
+Please note that the building system and unit movement mechanics are not yet complete, but they provide the essential foundation for future updates.
